@@ -57,6 +57,10 @@ nav button[aria-current=page],nav.bottom-nav button[aria-current=page]{backgroun
   }
   body { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }
 }
+@media (max-width: 768px) {
+  .mapel-students{order:1}
+  .mapel-ranking{order:2}
+}
 .row{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:end;margin-bottom:var(--s3)}
 .row>*{flex:1 1 11rem}.row>button{flex:0 0 auto}
 .login{max-width:24rem;margin:clamp(1.5rem, 6vh, 4rem) auto}
@@ -275,8 +279,8 @@ function viewMapel() {
     <div><label for="mk">Kelas</label><select id="mk">${options(kelasList(d).map(k => [k, "Kelas " + k]), S.mapelKelas, "Semua kelas")}</select></div>
     <button data-act="export-mapel">Unduh .xlsx</button></div>
   <div class="grid stats" style="margin-bottom:var(--s3)">${[["Rata-rata", fmt(avg(vals))], ["Tertinggi", vals.length ? fmt(Math.max(...vals)) : "–"], ["Terendah", vals.length ? fmt(Math.min(...vals)) : "–"], [`Di bawah KKM`, below]].map(([t, v]) => `<div class="card stat"><span class="muted">${t}</span><b>${v}</b></div>`).join("")}</div>
-  <div class="grid two"><section class="card"><h3>Peringkat rata-rata kelas</h3>${bars(ranking)}</section>
-  <section class="card" style="padding:0;overflow:hidden">${rows.length ? `<div class="tw" style="border:0"><table><thead><tr><th scope="col">#</th><th scope="col">Nama</th><th scope="col">Kelas</th><th scope="col">Nilai</th></tr></thead><tbody>${rows.map((s, n) => `<tr><td>${n + 1}</td><td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td><td>${esc(s.kelas)}</td><td>${cell(s.nilai[i])}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">Belum ada nilai untuk pilihan ini.</div>`}</section></div>`;
+  <div class="grid two"><section class="card mapel-ranking"><h3>Peringkat rata-rata kelas</h3>${bars(ranking)}</section>
+  <section class="card mapel-students" style="padding:0;overflow:hidden">${rows.length ? `<div class="tw" style="border:0"><table><thead><tr><th scope="col">#</th><th scope="col">Nama</th><th scope="col">Kelas</th><th scope="col">Nilai</th></tr></thead><tbody>${rows.map((s, n) => `<tr><td>${n + 1}</td><td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td><td>${esc(s.kelas)}</td><td>${cell(s.nilai[i])}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">Belum ada nilai untuk pilihan ini.</div>`}</section></div>`;
 }
 const VIEWS = { dashboard: ["Dashboard", viewDashboard], kelas: ["Nilai per kelas", viewKelas], mapel: ["Nilai per mapel", viewMapel] };
 
