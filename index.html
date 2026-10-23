@@ -242,6 +242,62 @@ const distribution = d => {
     return { label: text, value: all.filter(v => v >= from && v < to).length };
   });
 };
+function kelengkapan(d) {
+  if (!d || !d.siswa || !d.siswa.length || !d.mapel || !d.mapel.length) {
+    return { total: 0, terisi: 0, kosong: 0, pct: null, mapelKosong: [] };
+  }
+  const islamIdxs = [];
+  const kristenIdxs = [];
+  const relIdxs = [];
+  d.mapel.forEach((m, idx) => {
+    const lbl = label(m);
+    if (/islam|pai\b|paibp/i.test(lbl)) islamIdxs.push(idx);
+    if (/kristen|katolik|pak\b|pakbp/i.test(lbl)) kristenIdxs.push(idx);
+    if (/agama|kepercayaan/i.test(lbl)) relIdxs.push(idx);
+  });
+
+  const isWajib = (s, j) => {
+    if (valid(s.nilai[j])) return true;
+    if (kristenIdxs.includes(j)) {
+      if (islamIdxs.some(k => valid(s.nilai[k]))) return false;
+    }
+    if (islamIdxs.includes(j)) {
+      if (kristenIdxs.some(k => valid(s.nilai[k]))) return false;
+    }
+    if (relIdxs.includes(j)) {
+      if (relIdxs.some(k => k !== j && valid(s.nilai[k]))) return false;
+    }
+    return true;
+  };
+
+  let total = 0;
+  let terisi = 0;
+  const missingCounts = new Uint32Array(d.mapel.length);
+
+  for (let i = 0; i < d.siswa.length; i++) {
+    const s = d.siswa[i];
+    const vals = s.nilai;
+    for (let j = 0; j < d.mapel.length; j++) {
+      if (isWajib(s, j)) {
+        total++;
+        if (valid(vals[j])) {
+          terisi++;
+        } else {
+          missingCounts[j]++;
+        }
+      }
+    }
+  }
+
+  const kosong = total - terisi;
+  const pct = total > 0 ? (terisi / total * 100) : null;
+  const mapelKosong = d.mapel.map((m, j) => ({
+    label: label(m),
+    count: missingCounts[j]
+  })).filter(m => m.count > 0).sort((a, b) => b.count - a.count);
+
+  return { total, terisi, kosong, pct, mapelKosong };
+}
 
 /* ===== Ekspor .xlsx (tanpa library) ===== */
 const CRC = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
@@ -306,6 +362,10 @@ const kelasList = d => [...new Set(d.siswa.map(s => s.kelas))].sort(natural);
 /* ===== Layar ===== */
 const MAPEL_SHORT = {
   "Agama Islam": "PAI",
+  "Pendidikan Agama Islam": "PAI",
+  "Agama Kristen": "PAK",
+  "Pendidikan Agama Kristen": "PAK",
+  "Agama Katolik": "Katolik",
   "Pendidikan Pancasila": "PPKn",
   "Bahasa Indonesia": "B. Indo",
   "Bahasa Daerah": "B. Daerah",
@@ -327,17 +387,10 @@ function insights(d) {
   if (!d || !d.siswa || !d.siswa.length || !d.mapel || !d.mapel.length) {
     return [{ type: "info", text: "Belum ada data nilai yang cukup untuk dianalisis." }];
   }
-  const totalSel = d.siswa.length * d.mapel.length;
-  const validScores = d.siswa.flatMap(s => s.nilai).filter(valid);
-  if (!validScores.length) {
+  const kl = kelengkapan(d);
+  if (!kl.terisi) {
     return [{ type: "info", text: "Belum ada nilai yang dimasukkan ke spreadsheet." }];
   }
-
-  const kosong = totalSel - validScores.length;
-  const mapelKosong = d.mapel.map((m, i) => {
-    const kCount = d.siswa.filter(s => !valid(s.nilai[i])).length;
-    return { label: label(m), count: kCount };
-  }).filter(m => m.count > 0).sort((a, b) => b.count - a.count);
 
   const mapelAvgs = d.mapel.map((m, i) => {
     const scores = d.siswa.map(s => s.nilai[i]).filter(valid);
@@ -356,10 +409,10 @@ function insights(d) {
   const res = [];
 
   // 1. Peringatan kelengkapan pengisian nilai bila ada nilai kosong
-  if (kosong > 0 && mapelKosong.length > 0) {
+  if (kl.kosong > 0 && kl.mapelKosong.length > 0) {
     res.push({
       type: "warn",
-      text: `${kosong} nilai belum diinput (${mapelKosong[0].label} terbanyak: ${mapelKosong[0].count} siswa belum dinilai).`
+      text: `${kl.kosong} nilai belum diinput (${kl.mapelKosong[0].label} terbanyak: ${kl.mapelKosong[0].count} siswa belum dinilai).`
     });
   }
 
@@ -497,6 +550,7 @@ function viewLogin() {
 }
 function viewDashboard() {
   const d = S.data, sm = summary(d), tks = [...new Set(d.siswa.map(s => tingkat(s.kelas)))].sort(natural);
+  const kl = kelengkapan(d);
   const insList = insights(d);
   const matrix = matrixAgg(d, S.tg);
   const C = 276.46;
@@ -507,14 +561,9 @@ function viewDashboard() {
   const tuntasAria = sm.tuntas == null ? "belum ada data" : `${fmt(sm.tuntas)} persen siswa mencapai atau melampaui KKM ${KKM}`;
 
   // Cincin 2: Kelengkapan Data
-  const totalSel = d.siswa.length * d.mapel.length;
-  const validScores = d.siswa.flatMap(s => s.nilai).filter(valid);
-  const terisi = validScores.length;
-  const kosong = totalSel - terisi;
-  const kelengkapanPct = totalSel > 0 ? (terisi / totalSel * 100) : null;
-  const kelengkapanVal = kelengkapanPct == null ? 0 : Math.min(100, Math.max(0, kelengkapanPct));
+  const kelengkapanVal = kl.pct == null ? 0 : Math.min(100, Math.max(0, kl.pct));
   const kelengkapanOffset = (C * (1 - kelengkapanVal / 100)).toFixed(2);
-  const kelengkapanAria = kelengkapanPct == null ? "belum ada data" : `Kelengkapan data: ${terisi} dari ${totalSel} nilai terisi (${fmt(kelengkapanPct)} persen)`;
+  const kelengkapanAria = kl.pct == null ? "belum ada data" : `Kelengkapan data: ${kl.terisi} dari ${kl.total} nilai terisi (${fmt(kl.pct)} persen)`;
 
   return `<!-- 1. Ringkasan (Dual Ring & Statistik) -->
   <div class="dash-hero">
@@ -542,11 +591,11 @@ function viewDashboard() {
             <circle class="dash-ring-bar" cx="54" cy="54" r="44" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${kelengkapanOffset}" transform="rotate(-90 54 54)" />
           </svg>
           <div class="dash-ring-inner">
-            <span class="dash-ring-pct">${kelengkapanPct == null ? "–" : fmt(kelengkapanPct) + "%"}</span>
+            <span class="dash-ring-pct">${kl.pct == null ? "–" : fmt(kl.pct) + "%"}</span>
             <span class="dash-ring-sub">Kelengkapan</span>
           </div>
         </div>
-        <div class="dash-ring-caption">${terisi} dari ${totalSel} terisi${kosong > 0 ? ` (${kosong} kosong)` : ""}</div>
+        <div class="dash-ring-caption">${kl.terisi} dari ${kl.total} terisi${kl.kosong > 0 ? ` (${kl.kosong} kosong)` : ""}</div>
       </div>
     </div>
 
