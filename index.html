@@ -104,19 +104,33 @@ tfoot td:first-child,tfoot td:nth-child(2){z-index:3}
 @keyframes p{to{opacity:.4}}
 .empty{text-align:center;padding:var(--s4);color:var(--muted)}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.dash-hero{display:grid;grid-template-columns:14rem 1fr;gap:var(--s3);align-items:stretch}
-.dash-ring-card{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:var(--s3)}
+.dash-hero{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:var(--s3);align-items:stretch}
+.dash-rings{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.dash-ring-card{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:var(--s3) var(--s2)}
 .dash-ring-box{position:relative;width:108px;height:108px;display:flex;align-items:center;justify-content:center}
 .dash-ring-svg{width:108px;height:108px;display:block}
 .dash-ring-bar{transition:stroke-dashoffset var(--t-normal)}
 .dash-ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
 .dash-ring-pct{font:var(--font-h1);font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
 .dash-ring-sub{font:var(--font-micro);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
-.dash-ring-caption{margin-top:var(--s2);font:var(--font-caption);color:var(--muted)}
-.dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
+.dash-ring-caption{margin-top:var(--s2);font:var(--font-caption);color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.dash-stats{display:grid;grid-template-columns:1fr;gap:var(--s2)}
 .dash-stats .card{display:flex;flex-direction:column;justify-content:center}
-@media (max-width:768px){.dash-hero{grid-template-columns:1fr}}
-@media (max-width:440px){.dash-stats{grid-template-columns:1fr}}
+@media (max-width:900px){
+  .dash-hero{grid-template-columns:1fr}
+  .dash-stats{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:440px){
+  .dash-rings{grid-template-columns:1fr 1fr;gap:var(--s1)}
+  .dash-ring-card{padding:var(--s2) var(--s1)}
+  .dash-ring-box{width:96px;height:96px}
+  .dash-ring-svg{width:96px;height:96px}
+  .dash-ring-pct{font-size:1.125rem}
+  .dash-ring-caption{font-size:0.75rem}
+  .dash-stats{grid-template-columns:repeat(3,1fr);gap:var(--s1)}
+  .dash-stats .card{padding:var(--s2) var(--s1);text-align:center}
+  .dash-stats .card b{font-size:1.125rem}
+}
 .dash-attention{margin-top:var(--s3);border-left:4px solid var(--accent)}
 .dash-attention-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s2);gap:var(--s2);flex-wrap:wrap}
 .dash-attention-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
@@ -313,10 +327,18 @@ function insights(d) {
   if (!d || !d.siswa || !d.siswa.length || !d.mapel || !d.mapel.length) {
     return [{ type: "info", text: "Belum ada data nilai yang cukup untuk dianalisis." }];
   }
+  const totalSel = d.siswa.length * d.mapel.length;
   const validScores = d.siswa.flatMap(s => s.nilai).filter(valid);
   if (!validScores.length) {
-    return [{ type: "info", text: "Belum ada nilai yang dimasukkan." }];
+    return [{ type: "info", text: "Belum ada nilai yang dimasukkan ke spreadsheet." }];
   }
+
+  const kosong = totalSel - validScores.length;
+  const mapelKosong = d.mapel.map((m, i) => {
+    const kCount = d.siswa.filter(s => !valid(s.nilai[i])).length;
+    return { label: label(m), count: kCount };
+  }).filter(m => m.count > 0).sort((a, b) => b.count - a.count);
+
   const mapelAvgs = d.mapel.map((m, i) => {
     const scores = d.siswa.map(s => s.nilai[i]).filter(valid);
     return { id: i, label: label(m), avg: scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null };
@@ -333,6 +355,15 @@ function insights(d) {
   const sortedKelas = [...kelasAvgs].sort((a, b) => a.avg - b.avg);
   const res = [];
 
+  // 1. Peringatan kelengkapan pengisian nilai bila ada nilai kosong
+  if (kosong > 0 && mapelKosong.length > 0) {
+    res.push({
+      type: "warn",
+      text: `${kosong} nilai belum diinput (${mapelKosong[0].label} terbanyak: ${mapelKosong[0].count} siswa belum dinilai).`
+    });
+  }
+
+  // 2. Mapel dengan rata-rata terendah di bawah KKM
   if (sortedMapel.length && sortedMapel[0].avg < KKM) {
     res.push({
       type: "warn",
@@ -340,26 +371,28 @@ function insights(d) {
     });
   }
 
-  if (belowMapel.length > 1) {
+  // 3. Jumlah mapel di bawah KKM bila > 1
+  if (belowMapel.length > 1 && res.length < 3) {
     res.push({
       type: "warn",
       text: `Terdapat ${belowMapel.length} dari ${mapelAvgs.length} mata pelajaran dengan rata-rata di bawah KKM ${KKM}.`
     });
-  } else if (belowMapel.length === 1 && !res.length) {
+  } else if (belowMapel.length === 1 && !res.some(r => r.text.includes(belowMapel[0].label)) && res.length < 3) {
     res.push({
       type: "warn",
       text: `Mata pelajaran ${belowMapel[0].label} adalah satu-satunya mapel di bawah KKM (${fmt(belowMapel[0].avg)}).`
     });
   }
 
-  if (sortedKelas.length) {
+  // 4. Kelas dengan rata-rata terendah
+  if (sortedKelas.length && res.length < 3) {
     const lowestK = sortedKelas[0];
     if (lowestK.avg < KKM) {
       res.push({
         type: "warn",
         text: `Kelas ${lowestK.kelas} perlu perhatian khusus dengan rata-rata ${fmt(lowestK.avg)} (di bawah KKM ${KKM}).`
       });
-    } else if (res.length < 3 && (belowMapel.length > 0 || sortedKelas.length > 1)) {
+    } else if (res.length < 2 && sortedKelas.length > 1) {
       res.push({
         type: "info",
         text: `Kelas dengan rata-rata terendah saat ini adalah Kelas ${lowestK.kelas} (${fmt(lowestK.avg)}).`
@@ -367,11 +400,11 @@ function insights(d) {
     }
   }
 
-  if (!belowMapel.length && (!sortedKelas.length || sortedKelas[0].avg >= KKM)) {
-    return [{
+  if (res.length === 0) {
+    res.push({
       type: "good",
-      text: `Seluruh mata pelajaran dan kelas telah mencapai atau melampaui KKM ${KKM}.`
-    }];
+      text: `Seluruh data nilai lengkap (100%) dan seluruh mata pelajaran telah mencapai atau melampaui KKM ${KKM}.`
+    });
   }
 
   return res.slice(0, 3);
@@ -415,7 +448,7 @@ function heatLevel(v) {
 }
 
 function heatCell(v) {
-  if (v == null) return `<td class="dash-heat-cell heat-none">–</td>`;
+  if (v == null) return `<td class="dash-heat-cell heat-none" title="Belum ada data nilai diinput" aria-label="Belum ada data">–</td>`;
   const lvl = heatLevel(v);
   const isLow = v < KKM;
   const content = isLow ? `<span class="dash-low-marker" aria-hidden="true">▼</span>${fmt(v)}` : fmt(v);
@@ -467,25 +500,56 @@ function viewDashboard() {
   const insList = insights(d);
   const matrix = matrixAgg(d, S.tg);
   const C = 276.46;
+
+  // Cincin 1: Ketuntasan Belajar
   const tuntasPct = sm.tuntas == null ? 0 : Math.min(100, Math.max(0, sm.tuntas));
-  const offset = (C * (1 - tuntasPct / 100)).toFixed(2);
+  const tuntasOffset = (C * (1 - tuntasPct / 100)).toFixed(2);
   const tuntasAria = sm.tuntas == null ? "belum ada data" : `${fmt(sm.tuntas)} persen siswa mencapai atau melampaui KKM ${KKM}`;
 
-  return `<!-- 1. Ringkasan -->
+  // Cincin 2: Kelengkapan Data
+  const totalSel = d.siswa.length * d.mapel.length;
+  const validScores = d.siswa.flatMap(s => s.nilai).filter(valid);
+  const terisi = validScores.length;
+  const kosong = totalSel - terisi;
+  const kelengkapanPct = totalSel > 0 ? (terisi / totalSel * 100) : null;
+  const kelengkapanVal = kelengkapanPct == null ? 0 : Math.min(100, Math.max(0, kelengkapanPct));
+  const kelengkapanOffset = (C * (1 - kelengkapanVal / 100)).toFixed(2);
+  const kelengkapanAria = kelengkapanPct == null ? "belum ada data" : `Kelengkapan data: ${terisi} dari ${totalSel} nilai terisi (${fmt(kelengkapanPct)} persen)`;
+
+  return `<!-- 1. Ringkasan (Dual Ring & Statistik) -->
   <div class="dash-hero">
-    <div class="card dash-ring-card">
-      <div class="dash-ring-box" role="img" aria-label="Ketuntasan belajar: ${esc(tuntasAria)}">
-        <svg class="dash-ring-svg" viewBox="0 0 108 108" width="108" height="108" aria-hidden="true">
-          <circle cx="54" cy="54" r="44" fill="none" stroke="var(--line)" stroke-width="9" />
-          <circle class="dash-ring-bar" cx="54" cy="54" r="44" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${offset}" transform="rotate(-90 54 54)" />
-        </svg>
-        <div class="dash-ring-inner">
-          <span class="dash-ring-pct">${sm.tuntas == null ? "–" : fmt(sm.tuntas) + "%"}</span>
-          <span class="dash-ring-sub">Ketuntasan</span>
+    <div class="dash-rings">
+      <!-- Cincin 1: Ketuntasan Belajar -->
+      <div class="card dash-ring-card">
+        <div class="dash-ring-box" role="img" aria-label="Ketuntasan belajar: ${esc(tuntasAria)}">
+          <svg class="dash-ring-svg" viewBox="0 0 108 108" width="108" height="108" aria-hidden="true">
+            <circle cx="54" cy="54" r="44" fill="none" stroke="var(--line)" stroke-width="9" />
+            <circle class="dash-ring-bar" cx="54" cy="54" r="44" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${tuntasOffset}" transform="rotate(-90 54 54)" />
+          </svg>
+          <div class="dash-ring-inner">
+            <span class="dash-ring-pct">${sm.tuntas == null ? "–" : fmt(sm.tuntas) + "%"}</span>
+            <span class="dash-ring-sub">Ketuntasan</span>
+          </div>
         </div>
+        <div class="dash-ring-caption">Nilai &ge; KKM ${KKM}</div>
       </div>
-      <div class="dash-ring-caption">Nilai &ge; KKM ${KKM}</div>
+
+      <!-- Cincin 2: Kelengkapan Data -->
+      <div class="card dash-ring-card">
+        <div class="dash-ring-box" role="img" aria-label="${esc(kelengkapanAria)}">
+          <svg class="dash-ring-svg" viewBox="0 0 108 108" width="108" height="108" aria-hidden="true">
+            <circle cx="54" cy="54" r="44" fill="none" stroke="var(--line)" stroke-width="9" />
+            <circle class="dash-ring-bar" cx="54" cy="54" r="44" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${kelengkapanOffset}" transform="rotate(-90 54 54)" />
+          </svg>
+          <div class="dash-ring-inner">
+            <span class="dash-ring-pct">${kelengkapanPct == null ? "–" : fmt(kelengkapanPct) + "%"}</span>
+            <span class="dash-ring-sub">Kelengkapan</span>
+          </div>
+        </div>
+        <div class="dash-ring-caption">${terisi} dari ${totalSel} terisi${kosong > 0 ? ` (${kosong} kosong)` : ""}</div>
+      </div>
     </div>
+
     <div class="dash-stats">
       <div class="card stat"><span class="muted">Siswa</span><b>${esc(sm.siswa)}</b></div>
       <div class="card stat"><span class="muted">Kelas</span><b>${esc(sm.kelas)}</b></div>
