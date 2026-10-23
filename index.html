@@ -321,7 +321,7 @@ document.addEventListener("change", e => {
 document.addEventListener("input", e => { if (e.target.id === "q") { S.q = e.target.value; render(); } });
 
 /* ===== Mulai ===== */
-if (S.sess && S.sess.exp > Date.now()) loadData(false); else { store.del(SESSION_KEY); S.sess = null; render(); }
+if (S.sess && S.sess.exp > Date.now()) loadData(false); else { store.del(SESSION_KEY); store.del(DATA_KEY); S.sess = null; render(); }
 </script>
 </body>
 </html>
