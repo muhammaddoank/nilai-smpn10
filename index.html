@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rekap Nilai</title>
+<style>
+:root{color-scheme:light dark;--bg:#fafafa;--surface:#fff;--text:#18181b;--muted:#63636b;--line:#e4e4e7;--accent:#2563eb;--accent-fg:#fff;--bad:#b42318;--r:10px;--s1:4px;--s2:8px;--s3:16px;--s4:24px;--t:.18s}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--surface:#18181b;--text:#f4f4f5;--muted:#a1a1aa;--line:#2e2e33;--accent:#6b9bff;--accent-fg:#0e0e10;--bad:#ff8a80}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+[hidden]{display:none!important}
+h1,h2,h3{margin:0;line-height:1.25}h2{font-size:1.25rem}h3{font-size:1rem}
+.muted{color:var(--muted);font-size:.875rem}
+.wrap{max-width:72rem;margin:0 auto;padding:var(--s3)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s3)}
+.grid{display:grid;gap:var(--s3)}
+.stats{grid-template-columns:repeat(auto-fit,minmax(9rem,1fr))}
+.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))}
+.stat b{display:block;font-size:1.5rem;font-weight:600}
+button,input,select{font:inherit;color:inherit;min-height:44px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);padding:0 var(--s3)}
+button{cursor:pointer;transition:background var(--t),opacity var(--t)}
+button:hover{background:var(--bg)}button:disabled{opacity:.5;cursor:not-allowed}
+button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:600}
+button.primary:hover{opacity:.9}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label{display:block;font-weight:500;margin-bottom:var(--s1)}
+input,select{width:100%}
+.field{margin-bottom:var(--s3)}
+header.top{border-bottom:1px solid var(--line);background:var(--surface)}
+header .wrap{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;justify-content:space-between;padding-block:var(--s2)}
+nav{display:flex;gap:var(--s1);overflow-x:auto}
+nav button{border-color:transparent;background:none}
+nav button[aria-current=page]{background:var(--bg);border-color:var(--line);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:end;margin-bottom:var(--s3)}
+.row>*{flex:1 1 11rem}.row>button{flex:0 0 auto}
+.login{max-width:24rem;margin:12vh auto 0}
+.err{color:var(--bad);margin:var(--s2) 0;min-height:1.4em}
+.banner{border:1px solid var(--bad);color:var(--bad);border-radius:var(--r);padding:var(--s3);margin-bottom:var(--s3);display:flex;gap:var(--s3);justify-content:space-between;align-items:center;flex-wrap:wrap}
+.bar{display:grid;grid-template-columns:7.5rem 1fr 3rem;gap:var(--s2);align-items:center;margin:var(--s1) 0;font-size:.875rem}
+.bar span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.track{position:relative;height:10px;background:var(--bg);border:1px solid var(--line);border-radius:99px;overflow:visible}
+.fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.kkm{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--muted)}
+.tw{overflow:auto;max-height:65vh;border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:.875rem;font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right;background:var(--surface)}
+th{position:sticky;top:0;z-index:2;font-weight:600}
+th:first-child,td:first-child{position:sticky;left:0;z-index:1;text-align:center;width:3rem}
+th:first-child{z-index:3}
+th:nth-child(2),td:nth-child(2){text-align:left;min-width:12rem}
+tfoot td{font-weight:600;position:sticky;bottom:0}
+.low{color:var(--bad);font-weight:600}
+.skel{height:6rem;border-radius:var(--r);background:var(--line);animation:p 1.2s infinite alternate}
+@keyframes p{to{opacity:.4}}
+.empty{text-align:center;padding:var(--s4);color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+"use strict";
+/* ===== Konfigurasi ===== */
+const API_URL = "https://script.google.com/macros/s/AKfycby7hXngXJgR5IOajI-nUy-s-fd6IbnGR1YY9tro_Gb0w-rieewaOF37OLoKUpgYdiY/exec";
+const KKM = 75;
+const API_TIMEOUT_MS = 25000;
+const REFRESH_COOLDOWN_S = 30;
+const SESSION_KEY = "rn_session", DATA_KEY = "rn_data";
+const LABELS = { INFORMATIKA: "Informatika" };
+const BINS = [[0,49],[50,59],[60,69],[70,79],[80,89],[90,100]];
+
+/* ===== Util ===== */
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const label = m => LABELS[m] || m;
+const fmt = n => n == null ? "–" : (Math.round(n * 10) / 10).toLocaleString("id-ID");
+const natural = (a, b) => a.localeCompare(b, "id", { numeric: true });
+const store = {
+  get: k => { try { return JSON.parse(sessionStorage.getItem(k)); } catch { return null; } },
+  set: (k, v) => { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch { /* penyimpanan penuh/ditolak: abaikan */ } },
+  del: k => { try { sessionStorage.removeItem(k); } catch { /* abaikan */ } },
+};
+
+/* ===== API ===== */
+async function api(payload) {
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), API_TIMEOUT_MS);
+  try {
+    const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload), signal: ctl.signal });
+    const json = await res.json();
+    if (!json.ok) throw Object.assign(new Error(json.message), { code: json.code });
+    return json;
+  } catch (e) {
+    if (e.code) throw e;
+    throw Object.assign(new Error(e.name === "AbortError" ? "Server terlalu lama merespons. Coba lagi." : "Tidak dapat terhubung. Periksa koneksi internet."), { code: "NETWORK" });
+  } finally { clearTimeout(timer); }
+}
+
+/* ===== Statistik (fungsi murni) ===== */
+const valid = v => typeof v === "number" && Number.isFinite(v);
+const avg = xs => { const v = xs.filter(valid); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+const tingkat = k => String(k).split(".")[0];
+function summary(d) {
+  const all = d.siswa.flatMap(s => s.nilai).filter(valid);
+  return { siswa: d.siswa.length, kelas: new Set(d.siswa.map(s => s.kelas)).size, rata: avg(all), tuntas: all.length ? all.filter(v => v >= KKM).length / all.length * 100 : null };
+}
+const avgByMapel = d => d.mapel.map((m, i) => ({ label: label(m), value: avg(d.siswa.map(s => s.nilai[i])) }));
+function avgByKelas(d, t) {
+  const g = {};
+  d.siswa.filter(s => !t || tingkat(s.kelas) === t).forEach(s => (g[s.kelas] ??= []).push(avg(s.nilai)));
+  return Object.keys(g).sort(natural).map(k => ({ label: "Kelas " + k, value: avg(g[k]) }));
+}
+const distribution = d => { const all = d.siswa.flatMap(s => s.nilai).filter(valid); return BINS.map(([a, b]) => ({ label: `${a}–${b}`, value: all.filter(v => v >= a && v <= b).length })); };
+
+/* ===== Ekspor .xlsx (tanpa library) ===== */
+const CRC = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = b => { let c = 0xFFFFFFFF; for (const x of b) c = CRC[(c ^ x) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zipStore(files) {
+  const te = new TextEncoder(), parts = [], cen = []; let off = 0;
+  for (const [name, text] of files) {
+    const nb = te.encode(name), d = te.encode(text), c = crc32(d);
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x800, true); h.setUint16(12, 0x21, true);
+    h.setUint32(14, c, true); h.setUint32(18, d.length, true); h.setUint32(22, d.length, true); h.setUint16(26, nb.length, true);
+    parts.push(new Uint8Array(h.buffer), nb, d);
+    const k = new DataView(new ArrayBuffer(46));
+    k.setUint32(0, 0x02014b50, true); k.setUint16(4, 20, true); k.setUint16(6, 20, true); k.setUint16(8, 0x800, true); k.setUint16(14, 0x21, true);
+    k.setUint32(16, c, true); k.setUint32(20, d.length, true); k.setUint32(24, d.length, true); k.setUint16(28, nb.length, true); k.setUint32(42, off, true);
+    cen.push(new Uint8Array(k.buffer), nb); off += 30 + nb.length + d.length;
+  }
+  const size = cen.reduce((a, b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, size, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...cen, new Uint8Array(e.buffer)], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+}
+const colName = i => (i >= 26 ? colName(Math.floor(i / 26) - 1) : "") + String.fromCharCode(65 + i % 26);
+function downloadXlsx(rows, fileName) {
+  const x = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
+  const sheet = rows.map((r, i) => `<row r="${i + 1}">` + r.map((v, j) => {
+    const ref = colName(j) + (i + 1);
+    if (v == null || v === "") return "";
+    return valid(v) ? `<c r="${ref}"><v>${v}</v></c>` : `<c r="${ref}" t="inlineStr"><is><t>${x(v)}</t></is></c>`;
+  }).join("") + "</row>").join("");
+  const ns = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"', head = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const blob = zipStore([
+    ["[Content_Types].xml", `${head}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`],
+    ["_rels/.rels", `${head}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`],
+    ["xl/workbook.xml", `${head}<workbook ${ns} xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Nilai" sheetId="1" r:id="rId1"/></sheets></workbook>`],
+    ["xl/_rels/workbook.xml.rels", `${head}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>`],
+    ["xl/worksheets/sheet1.xml", `${head}<worksheet ${ns}><sheetData>${sheet}</sheetData></worksheet>`],
+  ]);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = fileName; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ===== State ===== */
+const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", setupToken: "", nama: "", error: "", loading: false, cooldown: 0 };
+
+/* ===== Komponen tampilan ===== */
+const bars = items => items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track"><div class="fill" style="width:${Math.min(100, i.value || 0)}%"></div><div class="kkm" style="left:${KKM}%" title="KKM ${KKM}"></div></div><span>${fmt(i.value)}</span></div>`).join("");
+function hist(items) {
+  const max = Math.max(1, ...items.map(i => i.value));
+  return items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track"><div class="fill" style="width:${i.value / max * 100}%"></div></div><span>${i.value}</span></div>`).join("");
+}
+const cell = v => v == null ? "–" : v < KKM ? `<span class="low" title="Di bawah KKM">▼ ${fmt(v)}</span>` : fmt(v);
+const chunkHead = cols => `<thead><tr><th>No</th><th>Nama</th>${cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead>`;
+const options = (list, sel, all) => (all ? `<option value="">${all}</option>` : "") + list.map(([v, t]) => `<option value="${esc(v)}"${String(v) === String(sel) ? " selected" : ""}>${esc(t)}</option>`).join("");
+const kelasList = d => [...new Set(d.siswa.map(s => s.kelas))].sort(natural);
+
+/* ===== Layar ===== */
+function viewLogin() {
+  const setup = !!S.setupToken;
+  return `<div class="login card"><h2>${setup ? "Buat PIN" : "Masuk"}</h2>
+  <p class="muted">${setup ? `Halo, ${esc(S.nama)}. Buat PIN 6 angka untuk login berikutnya.` : "Masuk dengan NIP. Login pertama memakai kode aktivasi dari admin."}</p>
+  <form id="f-login" novalidate>${setup ? `
+    <div class="field"><label for="pin">PIN baru (6 angka)</label><input id="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password" required></div>
+    <div class="field"><label for="pin2">Ulangi PIN</label><input id="pin2" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password" required></div>` : `
+    <div class="field"><label for="nip">NIP</label><input id="nip" inputmode="numeric" maxlength="20" autocomplete="username" required></div>
+    <div class="field"><label for="secret">PIN / kode aktivasi</label><input id="secret" type="password" maxlength="64" autocomplete="current-password" required></div>`}
+    <div class="err" role="alert">${esc(S.error)}</div>
+    <button class="primary" style="width:100%" type="submit">${setup ? "Simpan PIN" : "Masuk"}</button></form></div>`;
+}
+function viewDashboard() {
+  const d = S.data, sm = summary(d), tks = [...new Set(d.siswa.map(s => tingkat(s.kelas)))].sort(natural);
+  return `<div class="grid stats">
+    ${[["Siswa", sm.siswa], ["Kelas", sm.kelas], ["Rata-rata", fmt(sm.rata)], [`Nilai ≥ KKM ${KKM}`, sm.tuntas == null ? "–" : fmt(sm.tuntas) + "%"]].map(([t, v]) => `<div class="card stat"><span class="muted">${t}</span><b>${v}</b></div>`).join("")}</div>
+  <div class="grid two" style="margin-top:var(--s3)">
+    <section class="card"><h3>Rata-rata per mata pelajaran</h3><p class="muted">Garis tegak = KKM ${KKM}</p>${bars(avgByMapel(d))}</section>
+    <section class="card"><h3>Sebaran nilai</h3><p class="muted">Jumlah nilai per rentang</p>${hist(distribution(d))}</section>
+    <section class="card"><div class="row" style="margin:0 0 var(--s2)"><h3 style="flex:1">Rata-rata per kelas</h3><div><label class="muted" for="tg">Tingkat</label><select id="tg">${options(tks.map(t => [t, "Kelas " + t]), S.tg, "Semua")}</select></div></div>${bars(avgByKelas(d, S.tg))}</section>
+  </div>
+  <p style="margin-top:var(--s3)"><button data-act="export-all">Unduh semua nilai (.xlsx)</button></p>`;
+}
+function kelasRows() {
+  const d = S.data, q = S.q.trim().toLowerCase();
+  return d.siswa.filter(s => s.kelas === S.kelas && (!q || s.nama.toLowerCase().includes(q) || s.no_urut.includes(q)));
+}
+function viewKelas() {
+  const d = S.data, rows = kelasRows();
+  return `<div class="row"><div><label for="kelas">Kelas</label><select id="kelas">${options(kelasList(d).map(k => [k, "Kelas " + k]), S.kelas)}</select></div>
+    <div><label for="q">Cari siswa</label><input id="q" type="search" value="${esc(S.q)}" placeholder="Nama atau nomor"></div>
+    <button data-act="export-kelas">Unduh .xlsx</button></div>
+  ${rows.length ? `<div class="tw"><table>${chunkHead(d.mapel.map(label).concat("Rata-rata"))}<tbody>${rows.map(s => `<tr><td>${esc(s.no_urut)}</td><td>${esc(s.nama)}</td>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("")}</tbody>
+    <tfoot><tr><td></td><td>Rata-rata kelas</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr></tfoot></table></div>` : `<div class="card empty">Tidak ada siswa yang cocok.</div>`}`;
+}
+function mapelRows() {
+  const i = S.mapel;
+  return S.data.siswa.filter(s => !S.mapelKelas || s.kelas === S.mapelKelas).filter(s => valid(s.nilai[i])).sort((a, b) => b.nilai[i] - a.nilai[i]);
+}
+function viewMapel() {
+  const d = S.data, i = S.mapel, rows = mapelRows(), perKelas = {};
+  d.siswa.forEach(s => (perKelas[s.kelas] ??= []).push(s.nilai[i]));
+  const ranking = Object.keys(perKelas).sort(natural).map(k => ({ label: "Kelas " + k, value: avg(perKelas[k]) })).sort((a, b) => (b.value ?? -1) - (a.value ?? -1));
+  const vals = rows.map(s => s.nilai[i]), below = vals.filter(v => v < KKM).length;
+  return `<div class="row"><div><label for="mapel">Mata pelajaran</label><select id="mapel">${options(d.mapel.map((m, k) => [k, label(m)]), i)}</select></div>
+    <div><label for="mk">Kelas</label><select id="mk">${options(kelasList(d).map(k => [k, "Kelas " + k]), S.mapelKelas, "Semua kelas")}</select></div>
+    <button data-act="export-mapel">Unduh .xlsx</button></div>
+  <div class="grid stats" style="margin-bottom:var(--s3)">${[["Rata-rata", fmt(avg(vals))], ["Tertinggi", vals.length ? fmt(Math.max(...vals)) : "–"], ["Terendah", vals.length ? fmt(Math.min(...vals)) : "–"], [`Di bawah KKM`, below]].map(([t, v]) => `<div class="card stat"><span class="muted">${t}</span><b>${v}</b></div>`).join("")}</div>
+  <div class="grid two"><section class="card"><h3>Peringkat rata-rata kelas</h3>${bars(ranking)}</section>
+  <section class="card" style="padding:0;overflow:hidden">${rows.length ? `<div class="tw" style="border:0"><table><thead><tr><th>#</th><th>Nama</th><th>Kelas</th><th>Nilai</th></tr></thead><tbody>${rows.map((s, n) => `<tr><td>${n + 1}</td><td>${esc(s.nama)}</td><td>${esc(s.kelas)}</td><td>${cell(s.nilai[i])}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">Belum ada nilai untuk pilihan ini.</div>`}</section></div>`;
+}
+const VIEWS = { dashboard: ["Dashboard", viewDashboard], kelas: ["Nilai per kelas", viewKelas], mapel: ["Nilai per mapel", viewMapel] };
+
+function viewApp() {
+  const body = S.loading && !S.data ? `<div class="grid stats"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>` : S.data ? (S.data.siswa.length ? VIEWS[S.view][1]() : `<div class="card empty">Belum ada data siswa di spreadsheet.</div>`) : "";
+  return `<header class="top"><div class="wrap"><strong>Rekap Nilai</strong>
+    <nav aria-label="Menu utama">${Object.entries(VIEWS).map(([k, [t]]) => `<button data-view="${k}"${k === S.view ? ' aria-current="page"' : ""}>${t}</button>`).join("")}</nav>
+    <div style="display:flex;gap:var(--s2)"><button data-act="refresh"${S.loading || S.cooldown ? " disabled" : ""}>${S.loading ? "Memuat…" : S.cooldown ? `Segarkan (${S.cooldown})` : "Segarkan"}</button><button data-act="logout">Keluar</button></div></div></header>
+  <div class="wrap" aria-busy="${S.loading}">${S.error ? `<div class="banner" role="alert"><span>${esc(S.error)}</span><button data-act="retry">Coba lagi</button></div>` : ""}${body}</div>`;
+}
+
+/* ===== Render ===== */
+function render() {
+  const keep = document.activeElement && document.activeElement.id;
+  const pos = document.activeElement && document.activeElement.selectionStart;
+  $("#app").innerHTML = S.sess ? viewApp() : viewLogin();
+  const el = keep && document.getElementById(keep);
+  if (el) { el.focus(); if (pos != null && el.setSelectionRange && el.type === "search") el.setSelectionRange(pos, pos); }
+}
+
+/* ===== Aksi ===== */
+function logout(msg = "") {
+  S.sess = null; S.data = null; S.setupToken = ""; S.error = msg;
+  store.del(SESSION_KEY); store.del(DATA_KEY); render();
+}
+function startSession(r) {
+  S.sess = { token: r.token, nama: r.guru.nama, exp: r.expiresAt }; store.set(SESSION_KEY, S.sess);
+  S.setupToken = ""; S.error = ""; loadData(false);
+}
+async function loadData(force) {
+  if (!S.sess) return;
+  const cached = store.get(DATA_KEY);
+  if (cached && !S.data) { S.data = cached.data; initSelections(); }
+  S.loading = true; S.error = ""; render();
+  try {
+    const r = await api({ action: "data", token: S.sess.token, since: cached ? cached.version : "", force });
+    if (r.unchanged) { if (!S.data && cached) S.data = cached.data; }
+    else { S.data = { mapel: r.mapel, siswa: r.siswa }; store.set(DATA_KEY, { version: r.version, data: S.data }); }
+    initSelections();
+  } catch (e) {
+    if (e.code === "SESSION_EXPIRED") return logout(e.message);
+    S.error = e.message + (S.data ? " Menampilkan data terakhir." : "");
+  } finally { S.loading = false; render(); }
+}
+function initSelections() {
+  const ks = kelasList(S.data);
+  if (!ks.includes(S.kelas)) S.kelas = ks[0] || "";
+  if (S.mapel >= S.data.mapel.length) S.mapel = 0;
+}
+function startCooldown() {
+  S.cooldown = REFRESH_COOLDOWN_S;
+  const t = setInterval(() => { S.cooldown--; if (S.cooldown <= 0) clearInterval(t); render(); }, 1000);
+}
+function exportRows(kind) {
+  const d = S.data, head = ["Kelas", "No", "Nama", ...d.mapel.map(label)];
+  if (kind === "kelas") return [["No", "Nama", ...d.mapel.map(label), "Rata-rata"], ...kelasRows().map(s => [s.no_urut, s.nama, ...s.nilai, avg(s.nilai)])];
+  if (kind === "mapel") return [["No", "Nama", "Kelas", label(d.mapel[S.mapel])], ...mapelRows().map((s, n) => [n + 1, s.nama, s.kelas, s.nilai[S.mapel]])];
+  return [head, ...d.siswa.map(s => [s.kelas, s.no_urut, s.nama, ...s.nilai])];
+}
+const safeName = t => t.replace(/[^\w.-]+/g, "_");
+
+/* ===== Event ===== */
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "f-login") return;
+  e.preventDefault();
+  const btn = e.target.querySelector("button"), v = id => (document.getElementById(id)?.value || "").trim();
+  S.error = "";
+  try {
+    if (S.setupToken) {
+      if (!/^\d{6}$/.test(v("pin"))) throw new Error("PIN harus terdiri dari 6 angka.");
+      if (v("pin") !== v("pin2")) throw new Error("Kedua PIN tidak sama.");
+    } else if (!/^\d{8,20}$/.test(v("nip").replace(/\s+/g, "")) || !v("secret")) throw new Error("Isi NIP (angka) dan PIN/kode aktivasi.");
+    btn.disabled = true; btn.textContent = "Memproses…";
+    const r = S.setupToken ? await api({ action: "setPin", setupToken: S.setupToken, pin: v("pin") })
+                           : await api({ action: "login", nip: v("nip").replace(/\s+/g, ""), secret: v("secret") });
+    if (r.needsPin) { S.setupToken = r.setupToken; S.nama = r.nama; render(); $("#pin").focus(); return; }
+    startSession(r);
+  } catch (err) {
+    if (err.code === "SESSION_EXPIRED") S.setupToken = "";
+    S.error = err.message; render();
+  }
+});
+document.addEventListener("click", e => {
+  const v = e.target.closest("[data-view]"), a = e.target.closest("[data-act]");
+  if (v) { S.view = v.dataset.view; render(); return; }
+  if (!a) return;
+  const act = a.dataset.act, d = S.data;
+  if (act === "logout") logout();
+  else if (act === "retry") loadData(false);
+  else if (act === "refresh") { startCooldown(); loadData(true); }
+  else if (d && act.startsWith("export-")) {
+    const kind = act.slice(7), name = kind === "kelas" ? "Kelas_" + S.kelas : kind === "mapel" ? label(d.mapel[S.mapel]) : "Semua_Nilai";
+    downloadXlsx(exportRows(kind), safeName("Nilai_" + name) + ".xlsx");
+  }
+});
+document.addEventListener("change", e => {
+  const m = { kelas: v => S.kelas = v, mapel: v => S.mapel = Number(v), mk: v => S.mapelKelas = v, tg: v => S.tg = v }[e.target.id];
+  if (m) { m(e.target.value); render(); }
+});
+document.addEventListener("input", e => { if (e.target.id === "q") { S.q = e.target.value; render(); } });
+
+/* ===== Mulai ===== */
+if (S.sess && S.sess.exp > Date.now()) loadData(false); else { store.del(SESSION_KEY); S.sess = null; render(); }
+</script>
+</body>
+</html>
