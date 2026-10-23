@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Rekap Nilai</title>
 <style>
-:root{color-scheme:light dark;--bg:#fafafa;--surface:#fff;--text:#18181b;--muted:#63636b;--line:#e4e4e7;--accent:#2563eb;--accent-fg:#fff;--bad:#b42318;--r:10px;--s1:4px;--s2:8px;--s3:16px;--s4:24px;--t:.18s}
-@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--surface:#18181b;--text:#f4f4f5;--muted:#a1a1aa;--line:#2e2e33;--accent:#6b9bff;--accent-fg:#0e0e10;--bad:#ff8a80}}
+:root{color-scheme:light dark;--bg:#fafafa;--surface:#fff;--text:#18181b;--muted:#63636b;--line:#e4e4e7;--border-control:#8e8e93;--accent:#2563eb;--accent-fg:#fff;--bad:#b42318;--r:10px;--s1:4px;--s2:8px;--s3:16px;--s4:24px;--t:.18s}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--surface:#18181b;--text:#f4f4f5;--muted:#a1a1aa;--line:#2e2e33;--border-control:#64748b;--accent:#6b9bff;--accent-fg:#0e0e10;--bad:#ff8a80}}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 [hidden]{display:none!important}
-h1,h2,h3{margin:0;line-height:1.25}h2{font-size:1.25rem}h3{font-size:1rem}
+h1,h2,h3{margin:0;line-height:1.25}h1{font-size:1.125rem;font-weight:700}h2{font-size:1.25rem}h3{font-size:1rem}
 .muted{color:var(--muted);font-size:.875rem}
 .wrap{max-width:72rem;margin:0 auto;padding:var(--s3)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s3)}
@@ -19,20 +19,44 @@ h1,h2,h3{margin:0;line-height:1.25}h2{font-size:1.25rem}h3{font-size:1rem}
 .stats{grid-template-columns:repeat(auto-fit,minmax(9rem,1fr))}
 .two{grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))}
 .stat b{display:block;font-size:1.5rem;font-weight:600}
-button,input,select{font:inherit;color:inherit;min-height:44px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);padding:0 var(--s3)}
+button,input,select{font:inherit;color:inherit;min-height:44px;border-radius:var(--r);border:1px solid var(--border-control);background:var(--surface);padding:0 var(--s3)}
 button{cursor:pointer;transition:background var(--t),opacity var(--t)}
 button:hover{background:var(--bg)}button:disabled{opacity:.5;cursor:not-allowed}
 button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:600}
 button.primary:hover{opacity:.9}
+button.subtle{border-color:transparent;background:none;color:var(--muted)}
+button.subtle:hover{background:var(--bg);color:var(--bad)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 label{display:block;font-weight:500;margin-bottom:var(--s1)}
 input,select{width:100%}
 .field{margin-bottom:var(--s3)}
 header.top{border-bottom:1px solid var(--line);background:var(--surface)}
 header .wrap{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;justify-content:space-between;padding-block:var(--s2)}
-nav{display:flex;gap:var(--s1);overflow-x:auto}
-nav button{border-color:transparent;background:none}
-nav button[aria-current=page]{background:var(--bg);border-color:var(--line);font-weight:600}
+nav,nav.bottom-nav{display:flex;gap:var(--s1);overflow-x:auto}
+nav button,nav.bottom-nav button{border-color:transparent;background:none}
+nav button[aria-current=page],nav.bottom-nav button[aria-current=page]{background:var(--bg);border-color:var(--line);font-weight:600}
+@media (max-width: 640px) {
+  nav.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    padding: var(--s1) var(--s2) calc(var(--s1) + env(safe-area-inset-bottom));
+    z-index: 100;
+  }
+  nav.bottom-nav button {
+    padding: 0 var(--s1);
+    font-size: .8125rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  body { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }
+}
 .row{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:end;margin-bottom:var(--s3)}
 .row>*{flex:1 1 11rem}.row>button{flex:0 0 auto}
 .login{max-width:24rem;margin:12vh auto 0}
@@ -42,15 +66,18 @@ nav button[aria-current=page]{background:var(--bg);border-color:var(--line);font
 .bar span:last-child{text-align:right;font-variant-numeric:tabular-nums}
 .track{position:relative;height:10px;background:var(--bg);border:1px solid var(--line);border-radius:99px;overflow:visible}
 .fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
-.kkm{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--muted)}
+.fill.low{background:var(--bad)}
+.kkm{position:absolute;top:-4px;bottom:-4px;width:2px;background:#ffffff;box-shadow:0 0 2px rgba(0,0,0,.6);z-index:2}
 .tw{overflow:auto;max-height:65vh;border:1px solid var(--line);border-radius:var(--r)}
 table{border-collapse:separate;border-spacing:0;width:100%;font-size:.875rem;font-variant-numeric:tabular-nums}
 th,td{padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right;background:var(--surface)}
 th{position:sticky;top:0;z-index:2;font-weight:600}
-th:first-child,td:first-child{position:sticky;left:0;z-index:1;text-align:center;width:3rem}
-th:first-child{z-index:3}
-th:nth-child(2),td:nth-child(2){text-align:left;min-width:12rem}
-tfoot td{font-weight:600;position:sticky;bottom:0}
+th:first-child,td:first-child{position:sticky;left:0;z-index:2;width:2.75rem;min-width:2.75rem;text-align:center;background:var(--surface)}
+th:nth-child(2),td:nth-child(2){position:sticky;left:2.75rem;z-index:2;min-width:8rem;max-width:9.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;background:var(--surface);border-right:1px solid var(--line);box-shadow:2px 0 4px -2px rgba(0,0,0,.1)}
+th:first-child,th:nth-child(2){z-index:4}
+@media (min-width:640px){th:nth-child(2),td:nth-child(2){max-width:14rem}}
+tfoot td{font-weight:600;position:sticky;bottom:0;z-index:2;background:var(--surface)}
+tfoot td:first-child,tfoot td:nth-child(2){z-index:3}
 .low{color:var(--bad);font-weight:600}
 .skel{height:6rem;border-radius:var(--r);background:var(--line);animation:p 1.2s infinite alternate}
 @keyframes p{to{opacity:.4}}
@@ -106,7 +133,7 @@ function summary(d) {
   const all = d.siswa.flatMap(s => s.nilai).filter(valid);
   return { siswa: d.siswa.length, kelas: new Set(d.siswa.map(s => s.kelas)).size, rata: avg(all), tuntas: all.length ? all.filter(v => v >= KKM).length / all.length * 100 : null };
 }
-const avgByMapel = d => d.mapel.map((m, i) => ({ label: label(m), value: avg(d.siswa.map(s => s.nilai[i])) }));
+const avgByMapel = d => d.mapel.map((m, i) => ({ label: label(m), value: avg(d.siswa.map(s => s.nilai[i])) })).sort((a, b) => (a.value ?? 0) - (b.value ?? 0));
 function avgByKelas(d, t) {
   const g = {};
   d.siswa.filter(s => !t || tingkat(s.kelas) === t).forEach(s => (g[s.kelas] ??= []).push(avg(s.nilai)));
@@ -170,13 +197,13 @@ function downloadXlsx(rows, fileName) {
 const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", setupToken: "", nama: "", error: "", loading: false, cooldown: 0 };
 
 /* ===== Komponen tampilan ===== */
-const bars = items => items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track"><div class="fill" style="width:${Math.min(100, i.value || 0)}%"></div><div class="kkm" style="left:${KKM}%" title="KKM ${KKM}"></div></div><span>${fmt(i.value)}</span></div>`).join("");
+const bars = items => items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track" role="meter" aria-valuenow="${i.value ?? 0}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(i.label)}: ${fmt(i.value)}"><div class="fill${i.value != null && i.value < KKM ? ' low' : ''}" style="width:${Math.min(100, i.value || 0)}%"></div><div class="kkm" style="left:${KKM}%" title="KKM ${KKM}"></div></div><span>${cell(i.value)}</span></div>`).join("");
 function hist(items) {
   const max = Math.max(1, ...items.map(i => i.value));
-  return items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track"><div class="fill" style="width:${i.value / max * 100}%"></div></div><span>${i.value}</span></div>`).join("");
+  return items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track" role="meter" aria-valuenow="${i.value}" aria-valuemin="0" aria-valuemax="${max}" aria-label="${esc(i.label)}: ${i.value}"><div class="fill" style="width:${i.value / max * 100}%"></div></div><span>${i.value}</span></div>`).join("");
 }
 const cell = v => v == null ? "–" : v < KKM ? `<span class="low" title="Di bawah KKM">▼ ${fmt(v)}</span>` : fmt(v);
-const chunkHead = cols => `<thead><tr><th>No</th><th>Nama</th>${cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead>`;
+const chunkHead = cols => `<thead><tr><th scope="col">No</th><th scope="col">Nama</th>${cols.map(c => `<th scope="col">${esc(c)}</th>`).join("")}</tr></thead>`;
 const options = (list, sel, all) => (all ? `<option value="">${all}</option>` : "") + list.map(([v, t]) => `<option value="${esc(v)}"${String(v) === String(sel) ? " selected" : ""}>${esc(t)}</option>`).join("");
 const kelasList = d => [...new Set(d.siswa.map(s => s.kelas))].sort(natural);
 
@@ -213,7 +240,7 @@ function viewKelas() {
   return `<div class="row"><div><label for="kelas">Kelas</label><select id="kelas">${options(kelasList(d).map(k => [k, "Kelas " + k]), S.kelas)}</select></div>
     <div><label for="q">Cari siswa</label><input id="q" type="search" value="${esc(S.q)}" placeholder="Nama atau nomor"></div>
     <button data-act="export-kelas">Unduh .xlsx</button></div>
-  ${rows.length ? `<div class="tw"><table>${chunkHead(d.mapel.map(label).concat("Rata-rata"))}<tbody>${rows.map(s => `<tr><td>${esc(s.no_urut)}</td><td>${esc(s.nama)}</td>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("")}</tbody>
+  ${rows.length ? `<div class="tw"><table>${chunkHead(d.mapel.map(label).concat("Rata-rata"))}<tbody>${rows.map(s => `<tr><td>${esc(s.no_urut)}</td><td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("")}</tbody>
     <tfoot><tr><td></td><td>Rata-rata kelas</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr></tfoot></table></div>` : `<div class="card empty">Tidak ada siswa yang cocok.</div>`}`;
 }
 function mapelRows() {
@@ -230,15 +257,15 @@ function viewMapel() {
     <button data-act="export-mapel">Unduh .xlsx</button></div>
   <div class="grid stats" style="margin-bottom:var(--s3)">${[["Rata-rata", fmt(avg(vals))], ["Tertinggi", vals.length ? fmt(Math.max(...vals)) : "–"], ["Terendah", vals.length ? fmt(Math.min(...vals)) : "–"], [`Di bawah KKM`, below]].map(([t, v]) => `<div class="card stat"><span class="muted">${t}</span><b>${v}</b></div>`).join("")}</div>
   <div class="grid two"><section class="card"><h3>Peringkat rata-rata kelas</h3>${bars(ranking)}</section>
-  <section class="card" style="padding:0;overflow:hidden">${rows.length ? `<div class="tw" style="border:0"><table><thead><tr><th>#</th><th>Nama</th><th>Kelas</th><th>Nilai</th></tr></thead><tbody>${rows.map((s, n) => `<tr><td>${n + 1}</td><td>${esc(s.nama)}</td><td>${esc(s.kelas)}</td><td>${cell(s.nilai[i])}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">Belum ada nilai untuk pilihan ini.</div>`}</section></div>`;
+  <section class="card" style="padding:0;overflow:hidden">${rows.length ? `<div class="tw" style="border:0"><table><thead><tr><th scope="col">#</th><th scope="col">Nama</th><th scope="col">Kelas</th><th scope="col">Nilai</th></tr></thead><tbody>${rows.map((s, n) => `<tr><td>${n + 1}</td><td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td><td>${esc(s.kelas)}</td><td>${cell(s.nilai[i])}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">Belum ada nilai untuk pilihan ini.</div>`}</section></div>`;
 }
 const VIEWS = { dashboard: ["Dashboard", viewDashboard], kelas: ["Nilai per kelas", viewKelas], mapel: ["Nilai per mapel", viewMapel] };
 
 function viewApp() {
   const body = S.loading && !S.data ? `<div class="grid stats"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>` : S.data ? (S.data.siswa.length ? VIEWS[S.view][1]() : `<div class="card empty">Belum ada data siswa di spreadsheet.</div>`) : "";
-  return `<header class="top"><div class="wrap"><strong>Rekap Nilai</strong>
-    <nav aria-label="Menu utama">${Object.entries(VIEWS).map(([k, [t]]) => `<button data-view="${k}"${k === S.view ? ' aria-current="page"' : ""}>${t}</button>`).join("")}</nav>
-    <div style="display:flex;gap:var(--s2)"><button data-act="refresh"${S.loading || S.cooldown ? " disabled" : ""}>${S.loading ? "Memuat…" : S.cooldown ? `Segarkan (${S.cooldown})` : "Segarkan"}</button><button data-act="logout">Keluar</button></div></div></header>
+  return `<header class="top"><div class="wrap"><h1 style="font-size:1.125rem; font-weight:700; margin:0">Rekap Nilai</h1>
+    <nav class="bottom-nav" aria-label="Menu utama">${Object.entries(VIEWS).map(([k, [t]]) => `<button data-view="${k}"${k === S.view ? ' aria-current="page"' : ""}>${t}</button>`).join("")}</nav>
+    <div style="display:flex;gap:var(--s2)"><button data-act="refresh"${S.loading || S.cooldown ? " disabled" : ""}>${S.loading ? "Memuat…" : S.cooldown ? `Segarkan (${S.cooldown})` : "Segarkan"}</button><button class="subtle" data-act="logout">Keluar</button></div></div></header>
   <div class="wrap" aria-busy="${S.loading}">${S.error ? `<div class="banner" role="alert"><span>${esc(S.error)}</span><button data-act="retry">Coba lagi</button></div>` : ""}${body}</div>`;
 }
 
@@ -318,7 +345,9 @@ document.addEventListener("click", e => {
   if (v) { S.view = v.dataset.view; render(); return; }
   if (!a) return;
   const act = a.dataset.act, d = S.data;
-  if (act === "logout") logout();
+  if (act === "logout") {
+    if (window.confirm("Apakah Anda yakin ingin keluar dari aplikasi?")) logout();
+  }
   else if (act === "retry") loadData(false);
   else if (act === "refresh") { startCooldown(); loadData(true); }
   else if (d && act.startsWith("export-")) {
@@ -330,7 +359,26 @@ document.addEventListener("change", e => {
   const m = { kelas: v => S.kelas = v, mapel: v => S.mapel = Number(v), mk: v => S.mapelKelas = v, tg: v => S.tg = v }[e.target.id];
   if (m) { m(e.target.value); render(); }
 });
-document.addEventListener("input", e => { if (e.target.id === "q") { S.q = e.target.value; render(); } });
+let searchTimer;
+document.addEventListener("input", e => {
+  if (e.target.id === "q") {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      S.q = e.target.value;
+      const d = S.data;
+      if (!d) return;
+      const rows = kelasRows();
+      const tbody = document.querySelector(".tw tbody");
+      const tfoot = document.querySelector(".tw tfoot");
+      if (tbody && rows.length) {
+        tbody.innerHTML = rows.map(s => `<tr><td>${esc(s.no_urut)}</td><td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("");
+        if (tfoot) tfoot.innerHTML = `<tr><td></td><td>Rata-rata kelas</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr>`;
+      } else {
+        render();
+      }
+    }, 150);
+  }
+});
 
 /* ===== Mulai ===== */
 if (S.sess && S.sess.exp > Date.now()) loadData(false); else { store.del(SESSION_KEY); store.del(DATA_KEY); S.sess = null; render(); }
