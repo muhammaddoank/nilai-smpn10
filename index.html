@@ -5,22 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Rekap Nilai</title>
 <style>
-:root{color-scheme:light dark;--bg:#fafafa;--surface:#fff;--text:#18181b;--muted:#63636b;--line:#e4e4e7;--border-control:#8e8e93;--accent:#2563eb;--accent-fg:#fff;--bad:#b42318;--r:10px;--s1:4px;--s2:8px;--s3:16px;--s4:24px;--t:.18s}
-@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--surface:#18181b;--text:#f4f4f5;--muted:#a1a1aa;--line:#2e2e33;--border-control:#64748b;--accent:#6b9bff;--accent-fg:#0e0e10;--bad:#ff8a80}}
+:root{color-scheme:light dark;--bg:#f8fafc;--surface:#ffffff;--text:#0f172a;--text-muted:#64748b;--muted:var(--text-muted);--line-subtle:#e2e8f0;--line:var(--line-subtle);--border-control:#8e8e93;--accent:#2563eb;--accent-fg:#ffffff;--bad:#dc2626;--bad-bg:#fef2f2;--s1:4px;--s2:8px;--s3:16px;--s4:24px;--s5:32px;--r-sm:6px;--r-md:8px;--r-full:9999px;--r:var(--r-md);--shadow-card:0 1px 2px 0 rgba(0,0,0,.05);--shadow-sticky:2px 0 4px -2px rgba(0,0,0,.12);--t-fast:150ms cubic-bezier(0.4, 0, 0.2, 1);--t-normal:220ms cubic-bezier(0.4, 0, 0.2, 1);--t:var(--t-fast);--font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;--font-display:700 1.5rem/1.25 var(--font-family);--font-h1:600 1.25rem/1.3 var(--font-family);--font-h2:600 1rem/1.35 var(--font-family);--font-body:400 0.9375rem/1.5 var(--font-family);--font-caption:400 0.8125rem/1.4 var(--font-family);--font-micro:500 0.6875rem/1.3 var(--font-family)}
+@media (prefers-color-scheme:dark){:root{--bg:#09090b;--surface:#18181b;--text:#f4f4f5;--text-muted:#a1a1aa;--line-subtle:#27272a;--border-control:#64748b;--accent:#6b9bff;--accent-fg:#09090b;--bad:#f87171;--bad-bg:#2a1215;--shadow-card:0 1px 2px 0 rgba(0,0,0,.3);--shadow-sticky:2px 0 4px -2px rgba(0,0,0,.25)}}
 *{box-sizing:border-box}
 html,body{margin:0}
-body{font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+body{font:var(--font-body);background:var(--bg);color:var(--text);padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 [hidden]{display:none!important}
-h1,h2,h3{margin:0;line-height:1.25}h1{font-size:1.125rem;font-weight:700}h2{font-size:1.25rem}h3{font-size:1rem}
-.muted{color:var(--muted);font-size:.875rem}
+h1,h2,h3{margin:0}h1,h2{font:var(--font-h1)}h3{font:var(--font-h2)}
+.muted{color:var(--muted);font:var(--font-caption)}
 .wrap{max-width:72rem;margin:0 auto;padding:var(--s3)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s3)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow-card);padding:var(--s3)}
 .grid{display:grid;gap:var(--s3)}
 .stats{grid-template-columns:repeat(auto-fit,minmax(9rem,1fr))}
 .two{grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))}
-.stat b{display:block;font-size:1.5rem;font-weight:600}
-button,input,select{font:inherit;color:inherit;min-height:44px;border-radius:var(--r);border:1px solid var(--border-control);background:var(--surface);padding:0 var(--s3)}
-button{cursor:pointer;transition:background var(--t),opacity var(--t)}
+.stat b{display:block;font:var(--font-display);font-variant-numeric:tabular-nums}
+button,input,select{font:var(--font-body);color:inherit;min-height:44px;border-radius:var(--r-md);border:1px solid var(--border-control);background:var(--surface);padding:0 var(--s3)}
+button{cursor:pointer;transition:background var(--t-fast),opacity var(--t-fast),color var(--t-fast)}
 button:hover{background:var(--bg)}button:disabled{opacity:.5;cursor:not-allowed}
 button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:600}
 button.primary:hover{opacity:.9}
@@ -59,27 +59,44 @@ nav button[aria-current=page],nav.bottom-nav button[aria-current=page]{backgroun
 }
 .row{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:end;margin-bottom:var(--s3)}
 .row>*{flex:1 1 11rem}.row>button{flex:0 0 auto}
-.login{max-width:24rem;margin:12vh auto 0}
+.login{max-width:24rem;margin:clamp(1.5rem, 6vh, 4rem) auto}
 .err{color:var(--bad);margin:var(--s2) 0;min-height:1.4em}
-.banner{border:1px solid var(--bad);color:var(--bad);border-radius:var(--r);padding:var(--s3);margin-bottom:var(--s3);display:flex;gap:var(--s3);justify-content:space-between;align-items:center;flex-wrap:wrap}
-.bar{display:grid;grid-template-columns:7.5rem 1fr 3rem;gap:var(--s2);align-items:center;margin:var(--s1) 0;font-size:.875rem}
+.banner{border:1px solid var(--bad);color:var(--bad);background:var(--bad-bg);border-radius:var(--r-md);padding:var(--s3);margin-bottom:var(--s3);display:flex;gap:var(--s3);justify-content:space-between;align-items:center;flex-wrap:wrap;transition:opacity var(--t-normal)}
+.bar{display:grid;grid-template-columns:7.5rem 1fr 3rem;gap:var(--s2);align-items:center;margin:var(--s1) 0;font:var(--font-caption);font-variant-numeric:tabular-nums}
 .bar span:last-child{text-align:right;font-variant-numeric:tabular-nums}
-.track{position:relative;height:10px;background:var(--bg);border:1px solid var(--line);border-radius:99px;overflow:visible}
-.fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+@media (max-width: 440px) {
+  .bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "label val"
+      "track track";
+    gap: var(--s1);
+    margin-bottom: var(--s2);
+  }
+  .bar > span:first-child { grid-area: label; }
+  .bar > span:last-child { grid-area: val; text-align: right; }
+  .bar .track { grid-area: track; width: 100%; height: 8px; }
+  .bar-header { display: flex; justify-content: space-between; font-size: 0.8125rem; }
+}
+.track{position:relative;height:10px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-full);overflow:visible}
+.fill{height:100%;background:var(--accent);border-radius:var(--r-full);transition:width var(--t-normal)}
 .fill.low{background:var(--bad)}
 .kkm{position:absolute;top:-4px;bottom:-4px;width:2px;background:#ffffff;box-shadow:0 0 2px rgba(0,0,0,.6);z-index:2}
-.tw{overflow:auto;max-height:65vh;border:1px solid var(--line);border-radius:var(--r)}
-table{border-collapse:separate;border-spacing:0;width:100%;font-size:.875rem;font-variant-numeric:tabular-nums}
-th,td{padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right;background:var(--surface)}
-th{position:sticky;top:0;z-index:2;font-weight:600}
+.tw{overflow:auto;max-height:65vh;border:1px solid var(--line);border-radius:var(--r-md);box-shadow:inset -10px 0 8px -8px rgba(0,0,0,.15)}
+.scroll-hint{font:var(--font-micro)}
+@media (min-width:1200px){.scroll-hint{display:none}}
+table{border-collapse:separate;border-spacing:0;width:100%;font:var(--font-caption);font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right;background:var(--surface);font-variant-numeric:tabular-nums}
+th{position:sticky;top:0;z-index:2;font:var(--font-caption);font-weight:600}
 th:first-child,td:first-child{position:sticky;left:0;z-index:2;width:2.75rem;min-width:2.75rem;text-align:center;background:var(--surface)}
-th:nth-child(2),td:nth-child(2){position:sticky;left:2.75rem;z-index:2;min-width:8rem;max-width:9.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;background:var(--surface);border-right:1px solid var(--line);box-shadow:2px 0 4px -2px rgba(0,0,0,.1)}
+th:nth-child(2),td:nth-child(2){position:sticky;left:2.75rem;z-index:2;min-width:8rem;max-width:9.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;background:var(--surface);border-right:1px solid var(--line);box-shadow:var(--shadow-sticky)}
 th:first-child,th:nth-child(2){z-index:4}
 @media (min-width:640px){th:nth-child(2),td:nth-child(2){max-width:14rem}}
 tfoot td{font-weight:600;position:sticky;bottom:0;z-index:2;background:var(--surface)}
 tfoot td:first-child,tfoot td:nth-child(2){z-index:3}
-.low{color:var(--bad);font-weight:600}
-.skel{height:6rem;border-radius:var(--r);background:var(--line);animation:p 1.2s infinite alternate}
+.low{color:var(--bad);background:var(--bad-bg);padding:2px 6px;border-radius:var(--r-sm);font-weight:600;font-variant-numeric:tabular-nums}
+.skel{height:6rem;border-radius:var(--r-md);background:var(--line);animation:p 1.2s infinite alternate}
 @keyframes p{to{opacity:.4}}
 .empty{text-align:center;padding:var(--s4);color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -218,7 +235,8 @@ function viewLogin() {
     <div class="field"><label for="nip">NIP</label><input id="nip" inputmode="numeric" maxlength="20" autocomplete="username" required></div>
     <div class="field"><label for="secret">PIN / kode aktivasi</label><input id="secret" type="password" maxlength="64" autocomplete="current-password" required></div>`}
     <div class="err" role="alert">${esc(S.error)}</div>
-    <button class="primary" style="width:100%" type="submit">${setup ? "Simpan PIN" : "Masuk"}</button></form></div>`;
+    <button class="primary" style="width:100%" type="submit">${setup ? "Simpan PIN" : "Masuk"}</button>
+    <p class="muted" style="text-align:center; font-size:0.75rem; margin-top:var(--s3)">Lupa PIN atau kendala aktivasi? Hubungi tim kurikulum atau admin sekolah.</p></form></div>`;
 }
 function viewDashboard() {
   const d = S.data, sm = summary(d), tks = [...new Set(d.siswa.map(s => tingkat(s.kelas)))].sort(natural);
@@ -240,7 +258,8 @@ function viewKelas() {
   return `<div class="row"><div><label for="kelas">Kelas</label><select id="kelas">${options(kelasList(d).map(k => [k, "Kelas " + k]), S.kelas)}</select></div>
     <div><label for="q">Cari siswa</label><input id="q" type="search" value="${esc(S.q)}" placeholder="Nama atau nomor"></div>
     <button data-act="export-kelas">Unduh .xlsx</button></div>
-  ${rows.length ? `<div class="tw"><table>${chunkHead(d.mapel.map(label).concat("Rata-rata"))}<tbody>${rows.map(s => `<tr><td>${esc(s.no_urut)}</td><td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("")}</tbody>
+  ${rows.length ? `<p class="muted scroll-hint" style="font-size:0.75rem; margin-bottom:var(--s1)">&larr; Geser tabel ke kanan untuk melihat seluruh mapel &rarr;</p>
+  <div class="tw"><table>${chunkHead(d.mapel.map(label).concat("Rata-rata"))}<tbody>${rows.map(s => `<tr><td>${esc(s.no_urut)}</td><td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("")}</tbody>
     <tfoot><tr><td></td><td>Rata-rata kelas</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr></tfoot></table></div>` : `<div class="card empty">Tidak ada siswa yang cocok.</div>`}`;
 }
 function mapelRows() {
