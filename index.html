@@ -358,6 +358,297 @@ nav.bottom-nav button[aria-current="page"]:hover {
   }
 }
 
+/* ===== DASHBOARD MODERN v3 ===== */
+
+/* --- Sistem Warna Semantik Dashboard --- */
+:root {
+  /* Aksen utama (pertahankan biru) */
+  --accent:          #2563eb;   /* blue-600 — aksi utama */
+  --accent-hover:    #1d4ed8;
+  --accent-soft:     #eff6ff;   /* biru lembut untuk tint card */
+
+  /* Aksen semantik BARU (khusus dashboard) */
+  --dash-emerald:    #10b981;   /* emerald-500 — tuntas/positif */
+  --dash-emerald-bg: #ecfdf5;   /* emerald-50 */
+  --dash-emerald-fg: #047857;   /* emerald-700 (teks) */
+
+  --dash-amber:      #f59e0b;   /* amber-500 — perhatian */
+  --dash-amber-bg:   #fffbeb;   /* amber-50 */
+  --dash-amber-fg:   #b45309;   /* amber-700 */
+
+  --dash-indigo:     #6366f1;   /* indigo-500 — kelengkapan/data */
+  --dash-indigo-bg:  #eef2ff;   /* indigo-50 */
+
+  --dash-rose:       #f43f5e;   /* rose-500 — kritis */
+  --dash-rose-bg:    #fff1f2;   /* rose-50 */
+  --dash-rose-fg:    #be123c;
+
+  /* Permukaan & garis */
+  --dash-surface-2:  #f8fafc;   /* slate-50 — track bar */
+  --dash-line:       #e2e8f0;   /* slate-200 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent:          #6b9bff;
+    --accent-hover:    #8bb0ff;
+    --accent-soft:     #1a2540;
+
+    --dash-emerald:    #34d399;   /* emerald-400 lebih terang di dark */
+    --dash-emerald-bg: #0f2a21;
+    --dash-emerald-fg: #6ee7b7;
+
+    --dash-amber:      #fbbf24;
+    --dash-amber-bg:   #2a1f0b;
+    --dash-amber-fg:   #fcd34d;
+
+    --dash-indigo:     #818cf8;
+    --dash-indigo-bg:  #1e1b3a;
+
+    --dash-rose:       #fb7185;
+    --dash-rose-bg:    #2a1018;
+    --dash-rose-fg:    #fda4af;
+
+    --dash-surface-2:  #1c1d23;
+    --dash-line:       #2a2b31;
+  }
+}
+
+/* --- ① HERO — Dual Ring + Stats --- */
+.dash-ring-card:nth-child(1) {
+  background: radial-gradient(120% 120% at 50% 0%, var(--dash-emerald-bg) 0%, var(--surface) 65%);
+}
+.dash-ring-card:nth-child(2) {
+  background: radial-gradient(120% 120% at 50% 0%, var(--dash-indigo-bg) 0%, var(--surface) 65%);
+}
+
+.dash-ring-card:nth-child(1) .dash-ring-bar {
+  stroke: var(--dash-emerald);
+}
+.dash-ring-card:nth-child(2) .dash-ring-bar {
+  stroke: var(--dash-indigo);
+}
+.dash-ring-bar {
+  transition: stroke-dashoffset 900ms cubic-bezier(.2,.8,.2,1);
+}
+
+.dash-ring-pct {
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.dash-ring-sub {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.dash-ring-caption {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.dash-stats .card {
+  padding: var(--s3);
+  border-left: 3px solid var(--line);
+}
+.dash-stats .card:nth-child(1) {
+  border-left-color: var(--dash-indigo);
+}
+.dash-stats .card:nth-child(2) {
+  border-left-color: var(--accent);
+}
+.dash-stats .card:nth-child(3) {
+  border-left-color: var(--dash-emerald);
+}
+.dash-stats .card b {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* --- ② PANEL "PERLU PERHATIAN" — Semantic Colors --- */
+.dash-attention {
+  border-left: 0;
+  padding: var(--s3) var(--s3) var(--s3) var(--s4);
+}
+.dash-attention-item {
+  padding: var(--s2-5, 12px) var(--s3);
+  border-radius: var(--r-md);
+  border-left: 3px solid transparent;
+}
+.dash-attention-item.is-warn {
+  background: var(--dash-amber-bg);
+  border-left-color: var(--dash-amber);
+}
+.dash-attention-item.is-good {
+  background: var(--dash-emerald-bg);
+  border-left-color: var(--dash-emerald);
+}
+.dash-attention-item.is-info {
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+}
+
+.is-warn .dash-att-marker {
+  color: var(--dash-amber-fg);
+}
+.is-good .dash-att-marker {
+  color: var(--dash-emerald-fg);
+}
+.is-info .dash-att-marker {
+  color: var(--accent);
+}
+
+.dash-attention-head h3::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dash-amber);
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+/* --- ③ HEATMAP — Kontras Step Lebih Tegas --- */
+.dash-heat-cell.heat-1, .dash-legend-swatch.heat-1 { background:#e8f0ff; color:#1e3a8a; }
+.dash-heat-cell.heat-2, .dash-legend-swatch.heat-2 { background:#c7dbfc; color:#1e3a8a; }
+.dash-heat-cell.heat-3, .dash-legend-swatch.heat-3 { background:#9bbdf8; color:#0f172a; }
+.dash-heat-cell.heat-4, .dash-legend-swatch.heat-4 { background:#6e9cf3; color:#0f172a; }
+.dash-heat-cell.heat-5, .dash-legend-swatch.heat-5 { background:#3d6fe0; color:#ffffff; }
+
+@media (prefers-color-scheme:dark) {
+  .dash-heat-cell.heat-1, .dash-legend-swatch.heat-1 { background:#1a2333; color:#cbd5e1; }
+  .dash-heat-cell.heat-2, .dash-legend-swatch.heat-2 { background:#213153; color:#dbeafe; }
+  .dash-heat-cell.heat-3, .dash-legend-swatch.heat-3 { background:#2c4172; color:#e2e8f0; }
+  .dash-heat-cell.heat-4, .dash-legend-swatch.heat-4 { background:#3e5a9a; color:#ffffff; }
+  .dash-heat-cell.heat-5, .dash-legend-swatch.heat-5 { background:#4c6bb7; color:#ffffff; }
+}
+
+.dash-heat-cell.heat-low {
+  outline: 2px solid var(--dash-rose);
+  outline-offset: -2px;
+  font-weight: 600;
+}
+.dash-heat-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* --- ④ BAR CHART "Rata-rata per Mapel" --- */
+.fill {
+  background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%);
+}
+.fill.low {
+  background: linear-gradient(90deg, #fb7185 0%, #e11d48 100%);
+}
+.track {
+  height: 8px;
+  background: var(--dash-surface-2);
+  border: 0;
+}
+.kkm {
+  background: var(--text);
+  opacity: .35;
+  box-shadow: none;
+  border-radius: 1px;
+}
+@media (prefers-color-scheme:dark) {
+  .kkm {
+    background: #fff;
+    opacity: .7;
+  }
+}
+.bar {
+  grid-template-columns: 8.5rem minmax(0,1fr) 3.75rem;
+}
+.bar > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 440px) {
+  .bar {
+    grid-template-columns: 1fr auto;
+  }
+}
+
+/* --- ⑤ HISTOGRAM "Sebaran Nilai" --- */
+.dash-vhist-fill {
+  background: linear-gradient(180deg, #6366f1 0%, #2563eb 100%);
+  border-radius: 4px 4px 0 0;
+}
+.dash-vhist-track {
+  background: var(--dash-surface-2);
+  border: 0;
+}
+.dash-vhist-num {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.dash-vhist-col:last-child .dash-vhist-fill {
+  background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
+}
+.dash-vhist-col:nth-child(-n+2) .dash-vhist-fill {
+  background: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
+}
+
+/* --- ⑥ TYPOGRAPHY HIERARCHY (global dashboard) --- */
+.dash-hero h1,
+.dash-hero h2,
+.dash-hero h3,
+.dash-attention h3,
+.dash-heat-card h3,
+.dash-vhist-fig h3,
+.card h3 {
+  letter-spacing: -0.015em;
+}
+.card h3 {
+  font-size: 1.0625rem;
+  font-weight: 650;
+}
+.card h3 + p,
+.card h3 + .muted,
+.dash-attention-head p,
+.dash-heat-header p {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* --- ⑦ MICRO-INTERACTIONS --- */
+.dash-hero .card,
+.dash-attention,
+.dash-heat-card {
+  transition: box-shadow 220ms ease, border-color 220ms ease;
+}
+@media (hover: hover) {
+  .dash-hero .card:hover,
+  .dash-heat-card:hover {
+    box-shadow: 0 4px 12px -2px rgba(15,23,42,.08), 0 2px 6px -2px rgba(15,23,42,.05);
+  }
+}
+@media (hover: hover) and (prefers-color-scheme: dark) {
+  .dash-hero .card:hover,
+  .dash-heat-card:hover {
+    box-shadow: 0 4px 12px -2px rgba(0,0,0,.5);
+  }
+}
+
+@keyframes dashFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dash-ring-pct, .dash-ring-sub, .dash-ring-caption {
+  animation: dashFadeIn 500ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-ring-bar, .dash-ring-pct, .dash-ring-sub, .dash-ring-caption {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
