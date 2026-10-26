@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rekap Nilai</title>
+<title>Rekap Nilai – SMPN 10 Depok</title>
+<meta name="theme-color" content="#12355b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:light dark;--bg:#f8fafc;--surface:#ffffff;--text:#0f172a;--text-muted:#64748b;--muted:var(--text-muted);--line-subtle:#e2e8f0;--line:var(--line-subtle);--border-control:#8e8e93;--accent:#2563eb;--accent-fg:#ffffff;--bad:#dc2626;--bad-bg:#fef2f2;--heat-1:#f2f6fe;--heat-2:#e0e9fc;--heat-3:#cfddfb;--heat-4:#b9cdf9;--heat-5:#a3bdf7;--s1:4px;--s2:8px;--s3:16px;--s4:24px;--s5:32px;--r-sm:6px;--r-md:8px;--r-full:9999px;--r:var(--r-md);--shadow-card:0 1px 2px 0 rgba(0,0,0,.05);--shadow-sticky:2px 0 4px -2px rgba(0,0,0,.12);--t-fast:150ms cubic-bezier(0.4, 0, 0.2, 1);--t-normal:220ms cubic-bezier(0.4, 0, 0.2, 1);--t:var(--t-fast);--font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;--font-display:700 1.5rem/1.25 var(--font-family);--font-h1:600 1.25rem/1.3 var(--font-family);--font-h2:600 1rem/1.35 var(--font-family);--font-body:400 0.9375rem/1.5 var(--font-family);--font-caption:400 0.8125rem/1.4 var(--font-family);--font-micro:500 0.6875rem/1.3 var(--font-family)}
 @media (prefers-color-scheme:dark){:root{--bg:#09090b;--surface:#18181b;--text:#f4f4f5;--text-muted:#a1a1aa;--line-subtle:#27272a;--border-control:#64748b;--accent:#6b9bff;--accent-fg:#09090b;--bad:#f87171;--bad-bg:#2a1215;--heat-1:#1f222d;--heat-2:#252d3f;--heat-3:#2e3a56;--heat-4:#384a72;--heat-5:#425a8d;--shadow-card:0 1px 2px 0 rgba(0,0,0,.3);--shadow-sticky:2px 0 4px -2px rgba(0,0,0,.25)}}
@@ -276,7 +280,9 @@ button.subtle:hover:not(:disabled) {
   transition: background var(--t-fast);
 }
 .tw > table:not(.dash-heat-tbl) tbody tr:hover td,
+.tw > table:not(.dash-heat-tbl) tbody tr:hover th,
 .tw > table:not(.dash-heat-tbl) tbody tr:hover td:first-child,
+.tw > table:not(.dash-heat-tbl) tbody tr:hover th:nth-child(2),
 .tw > table:not(.dash-heat-tbl) tbody tr:hover td:nth-child(2) {
   background: var(--row-hover);
 }
@@ -1154,6 +1160,13 @@ details.dash-attention:not([open]) summary.dash-attention-head {
 .dash-attention-item.is-clickable:hover{transform:none}
 header h1{color:var(--brand);font-size:1.25rem}
 
+/* Aksesibilitas Landmark & Komponen */
+.skip{position:absolute;left:-999px;top:8px;background:var(--accent);color:var(--accent-fg);padding:8px 12px;border-radius:var(--r-md);z-index:200;text-decoration:none;font-weight:600}
+.skip:focus{left:8px}
+tbody th[scope=row]{top:auto;font-weight:500;text-align:left;z-index:2}  /* th di tbody jangan ikut sticky-top */
+.dash-attention-item.is-clickable{font:inherit;width:100%;text-align:left}
+button.dash-attention-item{width:100%;text-align:left;font:inherit;color:inherit;background:none;border:1px solid transparent;cursor:pointer}
+
 /* ===== MAPEL VIEW v4 ===== */
 /* Status badge di tabel */
 .mp-status {
@@ -1167,7 +1180,9 @@ header h1{color:var(--brand);font-size:1.25rem}
 
 /* Baris di bawah KKM */
 .tw > table tbody tr.mp-row-below td,
+.tw > table tbody tr.mp-row-below th,
 .tw > table tbody tr.mp-row-below td:first-child,
+.tw > table tbody tr.mp-row-below th:nth-child(2),
 .tw > table tbody tr.mp-row-below td:nth-child(2) {
   background: color-mix(in srgb, var(--dash-rose-bg) 40%, var(--surface));
 }
@@ -1279,7 +1294,8 @@ header h1{color:var(--brand);font-size:1.25rem}
 </style>
 </head>
 <body>
-<main id="app"></main>
+<a class="skip" href="#main">Lewati ke konten</a>
+<div id="app"></div>
 <script>
 "use strict";
 /* ===== Konfigurasi ===== */
@@ -1297,6 +1313,13 @@ const $ = s => document.querySelector(s);
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const label = m => LABELS[m] || m;
 const fmt = n => n == null ? "–" : (Math.round(n * 10) / 10).toLocaleString("id-ID");
+function fmtDate(ts) {
+  if (!ts) return "";
+  const d = new Date(ts);
+  const tgl = d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+  const jam = d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false }).replace(":", ".");
+  return `Diperbarui ${tgl}, ${jam}`;
+}
 const natural = (a, b) => a.localeCompare(b, "id", { numeric: true });
 const store = {
   get: k => { try { return JSON.parse(sessionStorage.getItem(k)); } catch { return null; } },
@@ -1507,7 +1530,7 @@ function downloadXlsx(rows, fileName) {
 }
 
 /* ===== State ===== */
-const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", setupToken: "", nama: "", error: "", loading: false, cooldown: 0, _view: null, _hadData: false };
+const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", setupToken: "", nama: "", error: "", loading: false, cooldown: 0, updatedAt: store.get(DATA_KEY)?.updatedAt || null, _view: null, _hadData: false };
 
 /* ===== Komponen tampilan ===== */
 const bars = items => items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track" role="meter" aria-valuenow="${i.value ?? 0}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(i.label)}: ${fmt(i.value)}"><div class="fill${i.value != null && i.value < KKM ? ' low' : ''}" style="width:${Math.min(100, i.value || 0)}%"></div><div class="kkm" style="left:${KKM}%" title="KKM ${KKM}"></div></div><span>${cell(i.value)}</span></div>`).join("");
@@ -1717,16 +1740,46 @@ function vhist(items) {
 
 function viewLogin() {
   const setup = !!S.setupToken;
-  return `<div class="login card"><h2>${setup ? "Buat PIN" : "Masuk"}</h2>
-  <p class="muted">${setup ? `Halo, ${esc(S.nama)}. Buat PIN 6 angka untuk login berikutnya.` : "Masuk dengan NIP. Login pertama memakai kode aktivasi dari admin."}</p>
-  <form id="f-login" novalidate>${setup ? `
-    <div class="field"><label for="pin">PIN baru (6 angka)</label><input id="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password" required></div>
-    <div class="field"><label for="pin2">Ulangi PIN</label><input id="pin2" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password" required></div>` : `
-    <div class="field"><label for="nip">NIP</label><input id="nip" inputmode="numeric" maxlength="20" autocomplete="username" required></div>
-    <div class="field"><label for="secret">PIN / kode aktivasi</label><input id="secret" type="password" maxlength="64" autocomplete="current-password" required></div>`}
-    <div class="err" role="alert">${esc(S.error)}</div>
-    <button class="primary" style="width:100%" type="submit">${setup ? "Simpan PIN" : "Masuk"}</button>
-    <p class="muted" style="text-align:center; font-size:0.75rem; margin-top:var(--s3)">Lupa PIN atau kendala aktivasi? Hubungi tim kurikulum atau admin sekolah.</p></form></div>`;
+  return `<main class="wrap" id="main">
+    <div style="max-width:24rem; margin:clamp(1.5rem, 5vh, 3rem) auto var(--s3); text-align:center">
+      <div style="display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:12px; background:var(--accent-soft); color:var(--accent); margin-bottom:var(--s2)" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
+      <div style="font-weight:700; font-size:1.125rem; color:var(--brand)">SMPN 10 Depok</div>
+      <div class="muted" style="font-size:0.8125rem">Sistem Rekapitulasi Nilai Siswa</div>
+    </div>
+    <div class="login card" style="margin-top:0">
+      <h1>${setup ? "Buat PIN" : "Masuk"}</h1>
+      <p class="muted">${setup ? `Halo, ${esc(S.nama)}. Buat PIN 6 angka untuk login berikutnya.` : "Masuk dengan NIP. Login pertama memakai kode aktivasi dari admin."}</p>
+      <form id="f-login" novalidate>${setup ? `
+        <div class="field">
+          <label for="pin">PIN baru (6 angka)</label>
+          <div style="position:relative; display:flex; align-items:center">
+            <input id="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password" required style="padding-right:7.5rem">
+            <button type="button" class="subtle" data-toggle-pw="pin" style="position:absolute; right:4px; top:50%; transform:translateY(-50%); min-height:36px; padding:0 8px; font-size:0.75rem" aria-label="Tampilkan PIN">Tampilkan PIN</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="pin2">Ulangi PIN</label>
+          <div style="position:relative; display:flex; align-items:center">
+            <input id="pin2" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password" required style="padding-right:7.5rem">
+            <button type="button" class="subtle" data-toggle-pw="pin2" style="position:absolute; right:4px; top:50%; transform:translateY(-50%); min-height:36px; padding:0 8px; font-size:0.75rem" aria-label="Tampilkan PIN">Tampilkan PIN</button>
+          </div>
+        </div>` : `
+        <div class="field"><label for="nip">NIP</label><input id="nip" inputmode="numeric" maxlength="20" autocomplete="username" required></div>
+        <div class="field">
+          <label for="secret">PIN / kode aktivasi</label>
+          <div style="position:relative; display:flex; align-items:center">
+            <input id="secret" type="password" maxlength="64" autocomplete="current-password" required style="padding-right:7.5rem">
+            <button type="button" class="subtle" data-toggle-pw="secret" style="position:absolute; right:4px; top:50%; transform:translateY(-50%); min-height:36px; padding:0 8px; font-size:0.75rem" aria-label="Tampilkan PIN">Tampilkan PIN</button>
+          </div>
+        </div>`}
+        <div class="err" role="alert">${esc(S.error)}</div>
+        <button class="primary" style="width:100%" type="submit">${setup ? "Simpan PIN" : "Masuk"}</button>
+        <p class="muted" style="text-align:center; font-size:0.75rem; margin-top:var(--s3)">Lupa PIN atau kendala aktivasi? Hubungi tim kurikulum atau admin sekolah.</p>
+      </form>
+    </div>
+  </main>`;
 }
 function viewDashboard() {
   const d = S.data, sm = summary(d), tks = [...new Set(d.siswa.map(s => tingkat(s.kelas)))].sort(natural);
@@ -1835,17 +1888,16 @@ function viewDashboard() {
         <span class="muted">${insList.every(i => i.type === 'good') ? 'Kondisi Baik' : `${insList.length} Catatan Otomatis`}</span>
       </summary>
       <ul class="dash-attention-list">
-        ${insList.map(item => `
-          <li class="dash-attention-item is-${esc(item.type)}${item.act ? ' is-clickable' : ''}"${item.act ? ` data-act="${esc(item.act)}"${item.mapel != null ? ` data-mapel="${item.mapel}"` : ''}${item.kelas ? ` data-kelas="${esc(item.kelas)}"` : ''} role="button" tabindex="0"` : ''}>
-            <span class="dash-att-marker" aria-hidden="true">
-              ${item.type === 'warn' ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>` :
-                item.type === 'good' ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>` :
-                `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`}
-            </span>
-            <span class="dash-att-text">${esc(item.text)}</span>
-            ${item.badge ? `<span class="dash-att-badge">${esc(item.badge)}</span>` : `<span class="dash-att-badge">Aksi</span>`}
-          </li>
-        `).join("")}
+        ${insList.map(item => {
+          const markerSvg = item.type === 'warn' ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>` :
+            item.type === 'good' ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>` :
+            `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+          const badgeHtml = item.badge ? `<span class="dash-att-badge">${esc(item.badge)}</span>` : (item.act ? `<span class="dash-att-badge">Aksi</span>` : '');
+          const content = `<span class="dash-att-marker" aria-hidden="true">${markerSvg}</span><span class="dash-att-text">${esc(item.text)}</span>${badgeHtml}`;
+          return item.act
+            ? `<li><button type="button" class="dash-attention-item is-${esc(item.type)} is-clickable" data-act="${esc(item.act)}"${item.mapel != null ? ` data-mapel="${item.mapel}"` : ''}${item.kelas ? ` data-kelas="${esc(item.kelas)}"` : ''}>${content}</button></li>`
+            : `<li><div class="dash-attention-item is-${esc(item.type)}">${content}</div></li>`;
+        }).join("")}
       </ul>
     </details>
 
@@ -1932,7 +1984,7 @@ function viewKelas() {
     <div><label for="q">Cari siswa</label><input id="q" type="search" value="${esc(S.q)}" placeholder="Nama atau nomor"></div>
     <button data-act="export-kelas">Unduh .xlsx</button></div>
   ${rows.length ? `<p class="muted scroll-hint" style="font-size:0.75rem; margin-bottom:var(--s1)">&larr; Geser tabel ke kanan untuk melihat seluruh mapel &rarr;</p>
-  <div class="tw"><table>${chunkHead(d.mapel.map(label).concat("Rata-rata"))}<tbody>${rows.map(s => `<tr><td>${esc(s.no_urut)}</td><td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("")}</tbody>
+  <div class="tw"><table>${chunkHead(d.mapel.map(label).concat("Rata-rata"))}<tbody>${rows.map(s => `<tr><td>${esc(s.no_urut)}</td><th scope="row" title="${esc(s.nama)}">${esc(s.nama)}</th>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("")}</tbody>
     <tfoot><tr><td></td><td>Rata-rata kelas</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr></tfoot></table></div>` : `<div class="card empty">Tidak ada siswa yang cocok.</div>`}`;
 }
 function mapelRows() {
@@ -2022,7 +2074,7 @@ function viewMapel() {
                 : `<span class="mp-status is-belum">✕ Belum</span>`;
               return `<tr${rowCls}>
                 <td>${n + 1}</td>
-                <td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td>
+                <th scope="row" title="${esc(s.nama)}">${esc(s.nama)}</th>
                 <td style="text-align:center">${esc(s.kelas)}</td>
                 <td>${cell(val)}</td>
                 <td style="text-align:center">${statusHtml}</td>
@@ -2064,10 +2116,35 @@ const VIEWS = { dashboard: ["Dashboard", viewDashboard], kelas: ["Nilai per kela
 
 function viewApp() {
   const body = S.loading && !S.data ? `<div class="grid stats"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>` : S.data ? (S.data.siswa.length ? VIEWS[S.view][1]() : `<div class="card empty">Belum ada data siswa di spreadsheet.</div>`) : "";
-  return `<header class="top"><div class="wrap"><h1 style="font-weight:700; margin:0">Rekap Nilai</h1>
-    <nav class="bottom-nav" aria-label="Menu utama">${Object.entries(VIEWS).map(([k, [t]]) => `<button data-view="${k}"${k === S.view ? ' aria-current="page"' : ""}>${t}</button>`).join("")}</nav>
-    <div style="display:flex;gap:var(--s2)"><button data-act="refresh"${S.loading || S.cooldown ? " disabled" : ""}>${S.loading ? "Memuat…" : S.cooldown ? `Segarkan (${S.cooldown})` : "Segarkan"}</button><button class="subtle" data-act="logout">Keluar</button></div></div></header>
-  <div class="wrap" aria-busy="${S.loading}">${S.error ? `<div class="banner" role="alert"><span>${esc(S.error)}</span><button data-act="retry">Coba lagi</button></div>` : ""}${body}</div>`;
+  const updatedText = S.updatedAt ? fmtDate(S.updatedAt) : "";
+  return `<header class="top">
+    <div class="wrap">
+      <div style="display:flex; align-items:center; gap:var(--s2)">
+        <span style="display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:8px; background:var(--accent-soft); color:var(--accent)" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </span>
+        <div>
+          <h1 style="font-weight:700; margin:0; line-height:1.2">Rekap Nilai</h1>
+          <div class="muted" style="font-size:0.75rem; line-height:1.2">SMPN 10 Depok</div>
+        </div>
+      </div>
+      <nav class="bottom-nav" aria-label="Menu utama">${Object.entries(VIEWS).map(([k, [t]]) => `<button data-view="${k}"${k === S.view ? ' aria-current="page"' : ""}>${t}</button>`).join("")}</nav>
+      <div style="display:flex; align-items:center; gap:var(--s2); flex-wrap:wrap">
+        ${S.sess ? `
+          <div style="text-align:right; font-size:0.75rem; line-height:1.25">
+            <div style="font-weight:600">${esc(S.sess.nama)}</div>
+            ${updatedText ? `<div class="muted" style="font-size:0.6875rem">${esc(updatedText)}</div>` : ""}
+          </div>` : ""}
+        <button data-act="refresh"${S.loading || S.cooldown ? " disabled" : ""}>${S.loading ? "Memuat…" : S.cooldown ? `Segarkan (${S.cooldown})` : "Segarkan"}</button>
+        <button class="subtle" data-act="logout">Keluar</button>
+      </div>
+    </div>
+  </header>
+  <main class="wrap" id="main" aria-busy="${S.loading}">
+    <h2 class="sr-only">${VIEWS[S.view][0]}</h2>
+    ${S.error ? `<div class="banner" role="alert"><span>${esc(S.error)}</span><button data-act="retry">Coba lagi</button></div>` : ""}
+    ${body}
+  </main>`;
 }
 
 /* ===== Render ===== */
@@ -2094,7 +2171,7 @@ function render() {
 
 /* ===== Aksi ===== */
 function logout(msg = "") {
-  S.sess = null; S.data = null; S.setupToken = ""; S.error = msg;
+  S.sess = null; S.data = null; S.setupToken = ""; S.error = msg; S.updatedAt = null;
   store.del(SESSION_KEY); store.del(DATA_KEY); render();
 }
 function startSession(r) {
@@ -2104,12 +2181,21 @@ function startSession(r) {
 async function loadData(force) {
   if (!S.sess) return;
   const cached = store.get(DATA_KEY);
-  if (cached && !S.data) { S.data = cached.data; initSelections(); }
+  if (cached) {
+    if (!S.data) { S.data = cached.data; initSelections(); }
+    if (cached.updatedAt) S.updatedAt = cached.updatedAt;
+  }
   S.loading = true; S.error = ""; render();
   try {
     const r = await api({ action: "data", token: S.sess.token, since: cached ? cached.version : "", force });
-    if (r.unchanged) { if (!S.data && cached) S.data = cached.data; }
-    else { S.data = { mapel: r.mapel, siswa: r.siswa }; store.set(DATA_KEY, { version: r.version, data: S.data }); }
+    if (r.unchanged) {
+      if (!S.data && cached) S.data = cached.data;
+      if (cached && cached.updatedAt) S.updatedAt = cached.updatedAt;
+    } else {
+      S.data = { mapel: r.mapel, siswa: r.siswa };
+      S.updatedAt = Date.now();
+      store.set(DATA_KEY, { version: r.version, data: S.data, updatedAt: S.updatedAt });
+    }
     initSelections();
   } catch (e) {
     if (e.code === "SESSION_EXPIRED") return logout(e.message);
@@ -2163,6 +2249,17 @@ document.addEventListener("submit", async e => {
   }
 });
 document.addEventListener("click", e => {
+  const pw = e.target.closest("[data-toggle-pw]");
+  if (pw) {
+    const input = document.getElementById(pw.dataset.togglePw);
+    if (input) {
+      const isPw = input.type === "password";
+      input.type = isPw ? "text" : "password";
+      pw.textContent = isPw ? "Sembunyikan" : "Tampilkan PIN";
+      pw.setAttribute("aria-label", isPw ? "Sembunyikan PIN" : "Tampilkan PIN");
+    }
+    return;
+  }
   const v = e.target.closest("[data-view]"), a = e.target.closest("[data-act]");
   if (v) { S.view = v.dataset.view; render(); return; }
   if (!a) return;
@@ -2210,7 +2307,7 @@ document.addEventListener("input", e => {
       const tbody = document.querySelector(".tw tbody");
       const tfoot = document.querySelector(".tw tfoot");
       if (tbody && rows.length) {
-        tbody.innerHTML = rows.map(s => `<tr><td>${esc(s.no_urut)}</td><td scope="row" title="${esc(s.nama)}">${esc(s.nama)}</td>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("");
+        tbody.innerHTML = rows.map(s => `<tr><td>${esc(s.no_urut)}</td><th scope="row" title="${esc(s.nama)}">${esc(s.nama)}</th>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("");
         if (tfoot) tfoot.innerHTML = `<tr><td></td><td>Rata-rata kelas</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr>`;
       } else {
         render();
