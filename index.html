@@ -1137,6 +1137,10 @@ details.dash-attention:not([open]) summary.dash-attention-head {
   }
 }
 
+.no-anim .dash-bento > *,.no-anim .fill,.no-anim .dash-vhist-fill,
+.no-anim .dash-ring-pct,.no-anim .dash-ring-sub,.no-anim .dash-ring-caption{animation:none}
+.no-anim .dash-ring-bar{transition:none}
+
 /* ===== MAPEL VIEW v4 ===== */
 /* Status badge di tabel */
 .mp-status {
@@ -1488,7 +1492,7 @@ function downloadXlsx(rows, fileName) {
 }
 
 /* ===== State ===== */
-const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", setupToken: "", nama: "", error: "", loading: false, cooldown: 0 };
+const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", setupToken: "", nama: "", error: "", loading: false, cooldown: 0, _view: null, _hadData: false };
 
 /* ===== Komponen tampilan ===== */
 const bars = items => items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track" role="meter" aria-valuenow="${i.value ?? 0}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(i.label)}: ${fmt(i.value)}"><div class="fill${i.value != null && i.value < KKM ? ' low' : ''}" style="width:${Math.min(100, i.value || 0)}%"></div><div class="kkm" style="left:${KKM}%" title="KKM ${KKM}"></div></div><span>${cell(i.value)}</span></div>`).join("");
@@ -2055,7 +2059,13 @@ function viewApp() {
 function render() {
   const keep = document.activeElement && document.activeElement.id;
   const pos = document.activeElement && document.activeElement.selectionStart;
+  const viewChanged = S._view !== S.view;
+  const animate = viewChanged || !!S.data !== S._hadData;
+  S._view = S.view; S._hadData = !!S.data;
+
   $("#app").innerHTML = S.sess ? viewApp() : viewLogin();
+  $("#app").classList.toggle("no-anim", !animate);
+  if (viewChanged) window.scrollTo(0, 0);
   const el = keep && document.getElementById(keep);
   if (el) { el.focus(); if (pos != null && el.setSelectionRange && el.type === "search") el.setSelectionRange(pos, pos); }
   if (typeof requestAnimationFrame !== "undefined") {
@@ -2098,7 +2108,15 @@ function initSelections() {
 }
 function startCooldown() {
   S.cooldown = REFRESH_COOLDOWN_S;
-  const t = setInterval(() => { S.cooldown--; if (S.cooldown <= 0) clearInterval(t); render(); }, 1000);
+  const t = setInterval(() => {
+    S.cooldown--;
+    const b = document.querySelector('[data-act="refresh"]');
+    if (b && !S.loading) {
+      b.disabled = S.cooldown > 0;
+      b.textContent = S.cooldown > 0 ? `Segarkan (${S.cooldown})` : "Segarkan";
+    }
+    if (S.cooldown <= 0) clearInterval(t);
+  }, 1000);
 }
 function exportRows(kind) {
   const d = S.data, head = ["Kelas", "No", "Nama", ...d.mapel.map(label)];
