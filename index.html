@@ -483,15 +483,25 @@ nav.bottom-nav button[aria-current="page"]:hover {
     grid-template-columns: 1fr;
   }
 }
-.dash-stats .card {
+.dash-stats .card,
+.stat-tile {
   border-left: 0;
   padding: var(--s3);
 }
-.dash-stats .card b {
-  font-size: 2rem;
+.dash-stats .card b,
+.stat-tile b {
+  font-size: 2.25rem;
   line-height: 1.05;
   font-weight: 700;
   letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.muted.stat-label {
+  font-size: .6875rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 .stat-trend {
   font-size: .75rem;
@@ -504,7 +514,33 @@ nav.bottom-nav button[aria-current="page"]:hover {
 /* --- ② PANEL "PERLU PERHATIAN" — Semantic Colors & Action Affordance --- */
 .dash-attention {
   border-left: 0;
-  padding: var(--s3) var(--s3) var(--s3) var(--s4);
+  padding: var(--s3);
+}
+summary.dash-attention-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s2-5);
+  gap: var(--s2);
+  flex-wrap: wrap;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+summary.dash-attention-head::-webkit-details-marker {
+  display: none;
+}
+summary.dash-attention-head::after {
+  content: "▾";
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: transform var(--t-fast);
+}
+details.dash-attention:not([open]) summary.dash-attention-head::after {
+  transform: rotate(-90deg);
+}
+details.dash-attention:not([open]) summary.dash-attention-head {
+  margin-bottom: 0;
 }
 .dash-attention-head h3::before {
   content: "";
@@ -740,7 +776,7 @@ nav.bottom-nav button[aria-current="page"]:hover {
   letter-spacing: -0.015em;
 }
 .card h3 {
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   font-weight: 650;
 }
 .card h3 + p,
@@ -751,20 +787,105 @@ nav.bottom-nav button[aria-current="page"]:hover {
   line-height: 1.5;
 }
 
+/* --- Bento Grid Dashboard (Layout v5) --- */
+.dash-bento {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--s3);
+  margin-top: var(--s4);
+}
+.dash-bento > .ring-card   { grid-column: span 3; }
+.dash-bento > .stat-tile   { grid-column: span 2; }   /* 3 tile */
+.dash-bento > .attention   { grid-column: span 6; }   /* full */
+.dash-bento > .heatmap     { grid-column: span 4; }
+.dash-bento > .histogram   { grid-column: span 2; }
+.dash-bento > .barmapel    { grid-column: span 6; }
+
+@media (max-width: 1100px) and (min-width: 901px) {
+  .dash-bento > .heatmap     { grid-column: span 6; }
+  .dash-bento > .barmapel    { grid-column: span 3; }
+  .dash-bento > .histogram   { grid-column: span 3; }
+}
+
+@media (max-width: 900px) {
+  .dash-bento { grid-template-columns: 1fr; }
+  .dash-bento > * { grid-column: span 1 !important; }
+  .dash-rings { grid-template-columns: 1fr; }
+}
+
+/* Stagger Animation FadeUp */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dash-bento > * {
+  animation: fadeUp 450ms cubic-bezier(.2,.8,.2,1) both;
+}
+.dash-bento > *:nth-child(1) { animation-delay: 0ms; }
+.dash-bento > *:nth-child(2) { animation-delay: 60ms; }
+.dash-bento > *:nth-child(3) { animation-delay: 120ms; }
+.dash-bento > *:nth-child(4) { animation-delay: 180ms; }
+.dash-bento > *:nth-child(5) { animation-delay: 240ms; }
+.dash-bento > *:nth-child(6) { animation-delay: 300ms; }
+.dash-bento > *:nth-child(7) { animation-delay: 360ms; }
+.dash-bento > *:nth-child(8) { animation-delay: 420ms; }
+.dash-bento > *:nth-child(9) { animation-delay: 480ms; }
+
+@starting-style {
+  .dash-ring-bar {
+    stroke-dashoffset: 276.46;
+  }
+}
+
+@media (max-width: 600px) {
+  .dash-ring-box { width: 88px; height: 88px; }
+  .dash-ring-svg { width: 88px; height: 88px; }
+  .dash-ring-pct { font-size: 1.35rem; }
+
+  .dash-attention-list { gap: var(--s1); }
+  .dash-attention-item { padding: var(--s2); }
+  .dash-att-badge { display: none; }
+
+  /* Heatmap mobile compact */
+  .dash-heat-tbl th,
+  .dash-heat-tbl td,
+  .dash-heat-cell,
+  .dash-heat-btn {
+    font-size: 0.75rem;
+  }
+  .dash-heat-cell {
+    min-width: 3rem;
+    min-height: 32px;
+    padding: 1px 2px;
+  }
+  .dash-th-mapel,
+  .dash-heat-tbl th:nth-child(2),
+  .dash-heat-tbl td:nth-child(2) {
+    min-width: 3rem;
+  }
+  .dash-th-corner,
+  .dash-th-kelas {
+    min-width: 4.5rem;
+  }
+}
+
 /* --- ⑦ MICRO-INTERACTIONS --- */
 .dash-hero .card,
+.dash-bento > .card,
 .dash-attention,
 .dash-heat-card {
   transition: box-shadow 220ms ease, border-color 220ms ease;
 }
 @media (hover: hover) {
   .dash-hero .card:hover,
+  .dash-bento > .card:hover,
   .dash-heat-card:hover {
     box-shadow: 0 4px 12px -2px rgba(15,23,42,.08), 0 2px 6px -2px rgba(15,23,42,.05);
   }
 }
 @media (hover: hover) and (prefers-color-scheme: dark) {
   .dash-hero .card:hover,
+  .dash-bento > .card:hover,
   .dash-heat-card:hover {
     box-shadow: 0 4px 12px -2px rgba(0,0,0,.5);
   }
@@ -779,7 +900,7 @@ nav.bottom-nav button[aria-current="page"]:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dash-ring-bar, .dash-ring-pct, .dash-ring-sub, .dash-ring-caption {
+  .dash-bento > *, .dash-ring-bar, .dash-ring-pct, .dash-ring-sub, .dash-ring-caption, .fill, .dash-vhist-fill {
     animation: none !important;
     transition: none !important;
   }
@@ -1387,168 +1508,169 @@ function viewDashboard() {
       </linearGradient>
     </defs>
   </svg>
-  <div class="dash-hero">
-    <div class="dash-rings">
-      <!-- Cincin 1: Ketuntasan Belajar -->
-      <div class="card dash-ring-card">
-        <div class="dash-ring-box" role="img" aria-label="Ketuntasan belajar: ${esc(tuntasAria)}">
-          <svg class="dash-ring-svg" viewBox="0 0 108 108" width="108" height="108" aria-hidden="true">
-            <circle cx="54" cy="54" r="44" fill="none" stroke="var(--line)" stroke-width="9" />
-            <circle class="dash-ring-bar" cx="54" cy="54" r="44" fill="none" stroke="url(#grad-emerald)" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${tuntasOffset}" transform="rotate(-90 54 54)" />
-          </svg>
-          <div class="dash-ring-inner">
-            <span class="dash-ring-pct">${sm.tuntas == null ? "–" : fmt(sm.tuntas) + "%"}</span>
-            <span class="dash-ring-sub">Ketuntasan</span>
-          </div>
+  <div class="dash-bento">
+    <!-- Cincin 1: Ketuntasan Belajar -->
+    <div class="card dash-ring-card ring-card">
+      <div class="dash-ring-box" role="img" aria-label="Ketuntasan belajar: ${esc(tuntasAria)}">
+        <svg class="dash-ring-svg" viewBox="0 0 108 108" width="108" height="108" aria-hidden="true">
+          <circle cx="54" cy="54" r="44" fill="none" stroke="var(--line)" stroke-width="9" />
+          <circle class="dash-ring-bar" cx="54" cy="54" r="44" fill="none" stroke="url(#grad-emerald)" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="276.46" data-offset="${tuntasOffset}" transform="rotate(-90 54 54)" />
+        </svg>
+        <div class="dash-ring-inner">
+          <span class="dash-ring-pct">${sm.tuntas == null ? "–" : fmt(sm.tuntas) + "%"}</span>
+          <span class="dash-ring-sub">Ketuntasan</span>
         </div>
-        <div class="dash-ring-caption">Nilai &ge; KKM ${KKM}</div>
       </div>
-
-      <!-- Cincin 2: Kelengkapan Data -->
-      <div class="card dash-ring-card">
-        <div class="dash-ring-box" role="img" aria-label="${esc(kelengkapanAria)}">
-          <svg class="dash-ring-svg" viewBox="0 0 108 108" width="108" height="108" aria-hidden="true">
-            <circle cx="54" cy="54" r="44" fill="none" stroke="var(--line)" stroke-width="9" />
-            <circle class="dash-ring-bar" cx="54" cy="54" r="44" fill="none" stroke="url(#grad-indigo)" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="${kelengkapanOffset}" transform="rotate(-90 54 54)" />
-          </svg>
-          <div class="dash-ring-inner">
-            <span class="dash-ring-pct">${kl.pct == null ? "–" : fmt(kl.pct) + "%"}</span>
-            <span class="dash-ring-sub">Kelengkapan</span>
-          </div>
-        </div>
-        <div class="dash-ring-caption">${kl.terisi} dari ${kl.total} terisi${kl.kosong > 0 ? ` (${kl.kosong} kosong)` : ""}</div>
-      </div>
+      <div class="dash-ring-caption">Nilai &ge; KKM ${KKM}</div>
     </div>
 
-    <div class="dash-stats">
-      <div class="card stat">
-        <div class="stat-head">
-          <span class="stat-icon" data-tone="indigo">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          </span>
-          <span class="muted">Siswa</span>
+    <!-- Cincin 2: Kelengkapan Data -->
+    <div class="card dash-ring-card ring-card">
+      <div class="dash-ring-box" role="img" aria-label="${esc(kelengkapanAria)}">
+        <svg class="dash-ring-svg" viewBox="0 0 108 108" width="108" height="108" aria-hidden="true">
+          <circle cx="54" cy="54" r="44" fill="none" stroke="var(--line)" stroke-width="9" />
+          <circle class="dash-ring-bar" cx="54" cy="54" r="44" fill="none" stroke="url(#grad-indigo)" stroke-width="9" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="276.46" data-offset="${kelengkapanOffset}" transform="rotate(-90 54 54)" />
+        </svg>
+        <div class="dash-ring-inner">
+          <span class="dash-ring-pct">${kl.pct == null ? "–" : fmt(kl.pct) + "%"}</span>
+          <span class="dash-ring-sub">Kelengkapan</span>
         </div>
-        <b>${esc(sm.siswa)}</b>
-        <span class="stat-trend is-up">Aktif terdaftar</span>
       </div>
-      <div class="card stat">
-        <div class="stat-head">
-          <span class="stat-icon" data-tone="accent">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          </span>
-          <span class="muted">Kelas</span>
-        </div>
-        <b>${esc(sm.kelas)}</b>
-        <span class="stat-trend is-up">${tks.length} tingkat rombel</span>
-      </div>
-      <div class="card stat">
-        <div class="stat-head">
-          <span class="stat-icon" data-tone="${sm.rata != null && sm.rata >= KKM ? 'emerald' : 'rose'}">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          </span>
-          <span class="muted">Rata-rata</span>
-        </div>
-        <b>${fmt(sm.rata)}</b>
-        ${sm.rata != null ? (sm.rata >= KKM
-          ? `<span class="stat-trend is-up">+${fmt(sm.rata - KKM)} vs KKM</span>`
-          : `<span class="stat-trend is-down">${fmt(sm.rata - KKM)} vs KKM</span>`)
-          : `<span class="muted">–</span>`}
-      </div>
+      <div class="dash-ring-caption">${kl.terisi} dari ${kl.total} terisi${kl.kosong > 0 ? ` (${kl.kosong} kosong)` : ""}</div>
     </div>
-  </div>
 
-  <!-- 2. Panel Perlu Perhatian -->
-  <section class="card dash-attention" aria-labelledby="att-title">
-    <div class="dash-attention-head">
-      <h3 id="att-title">Perlu Perhatian</h3>
-      <span class="muted">${insList.every(i => i.type === 'good') ? 'Kondisi Baik' : 'Catatan Otomatis'}</span>
+    <!-- 3 Stat Tiles -->
+    <div class="card stat stat-tile">
+      <div class="stat-head">
+        <span class="stat-icon" data-tone="indigo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </span>
+        <span class="muted stat-label">Siswa</span>
+      </div>
+      <b>${esc(sm.siswa)}</b>
+      <span class="stat-trend is-up">Aktif terdaftar</span>
     </div>
-    <ul class="dash-attention-list">
-      ${insList.map(item => `
-        <li class="dash-attention-item is-${esc(item.type)}${item.act ? ' is-clickable' : ''}"${item.act ? ` data-act="${esc(item.act)}"${item.mapel != null ? ` data-mapel="${item.mapel}"` : ''}${item.kelas ? ` data-kelas="${esc(item.kelas)}"` : ''} role="button" tabindex="0"` : ''}>
-          <span class="dash-att-marker" aria-hidden="true">
-            ${item.type === 'warn' ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>` :
-              item.type === 'good' ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>` :
-              `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`}
-          </span>
-          <span class="dash-att-text">${esc(item.text)}</span>
-          ${item.badge ? `<span class="dash-att-badge">${esc(item.badge)}</span>` : `<span class="dash-att-badge">Aksi</span>`}
-        </li>
-      `).join("")}
-    </ul>
-  </section>
 
-  <!-- 3. Peta Nilai (Heatmap) -->
-  <section class="card dash-heat-card" style="margin-top:var(--s3)">
-    <div class="row dash-heat-header" style="margin:0 0 var(--s2)">
-      <div style="flex:1">
-        <h3 id="heat-title">Peta Nilai</h3>
-        <p class="muted" style="margin:0">Rata-rata kelas &times; mata pelajaran</p>
+    <div class="card stat stat-tile">
+      <div class="stat-head">
+        <span class="stat-icon" data-tone="accent">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </span>
+        <span class="muted stat-label">Kelas</span>
       </div>
-      <div style="flex:0 0 auto; min-width:8rem">
-        <label class="muted" for="tg">Tingkat</label>
-        <select id="tg" aria-controls="dash-heatmap-tbl">${options(tks.map(t => [t, "Kelas " + t]), S.tg, "Semua")}</select>
-      </div>
+      <b>${esc(sm.kelas)}</b>
+      <span class="stat-trend is-up">${tks.length} tingkat rombel</span>
     </div>
-    ${matrix.length ? `
-      <p class="muted scroll-hint" style="font-size:0.75rem; margin-bottom:var(--s1)">&larr; Geser tabel untuk melihat seluruh mapel &rarr;</p>
-      <div class="tw dash-heat-tw" tabindex="0" role="region" aria-label="Tabel Peta Nilai">
-        <table id="dash-heatmap-tbl" class="dash-heat-tbl" aria-labelledby="heat-title">
-          <caption class="sr-only">Tabel nilai rata-rata per kelas dan mata pelajaran. Klik nama kelas untuk membuka halaman Nilai per Kelas, klik nama mata pelajaran untuk membuka halaman Nilai per Mapel.</caption>
-          <thead>
-            <tr>
-              <th scope="col" class="dash-th-corner">Kelas</th>
-              ${d.mapel.map((m, i) => `
-                <th scope="col" class="dash-th-mapel">
-                  <button type="button" class="dash-heat-btn" data-act="nav-mapel" data-mapel="${i}" title="${esc(label(m))}" aria-label="Lihat detail nilai mapel ${esc(label(m))}">
-                    <span class="dash-mapel-full">${esc(label(m))}</span>
-                    <span class="dash-mapel-short">${esc(shortLabel(m))}</span>
-                  </button>
-                </th>
-              `).join("")}
-            </tr>
-          </thead>
-          <tbody>
-            ${matrix.map(row => `
+
+    <div class="card stat stat-tile">
+      <div class="stat-head">
+        <span class="stat-icon" data-tone="${sm.rata != null && sm.rata >= KKM ? 'emerald' : 'rose'}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </span>
+        <span class="muted stat-label">Rata-rata</span>
+      </div>
+      <b>${fmt(sm.rata)}</b>
+      ${sm.rata != null ? (sm.rata >= KKM
+        ? `<span class="stat-trend is-up">+${fmt(sm.rata - KKM)} vs KKM</span>`
+        : `<span class="stat-trend is-down">${fmt(sm.rata - KKM)} vs KKM</span>`)
+        : `<span class="muted">–</span>`}
+    </div>
+
+    <!-- 2. Panel Perlu Perhatian (Collapsible <details>) -->
+    <details class="card dash-attention attention" open aria-labelledby="att-title">
+      <summary class="dash-attention-head">
+        <div style="display:inline-flex; align-items:center; gap:var(--s2)">
+          <h3 id="att-title" style="margin:0">Perlu Perhatian</h3>
+        </div>
+        <span class="muted">${insList.every(i => i.type === 'good') ? 'Kondisi Baik' : `${insList.length} Catatan Otomatis`}</span>
+      </summary>
+      <ul class="dash-attention-list">
+        ${insList.map(item => `
+          <li class="dash-attention-item is-${esc(item.type)}${item.act ? ' is-clickable' : ''}"${item.act ? ` data-act="${esc(item.act)}"${item.mapel != null ? ` data-mapel="${item.mapel}"` : ''}${item.kelas ? ` data-kelas="${esc(item.kelas)}"` : ''} role="button" tabindex="0"` : ''}>
+            <span class="dash-att-marker" aria-hidden="true">
+              ${item.type === 'warn' ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>` :
+                item.type === 'good' ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>` :
+                `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`}
+            </span>
+            <span class="dash-att-text">${esc(item.text)}</span>
+            ${item.badge ? `<span class="dash-att-badge">${esc(item.badge)}</span>` : `<span class="dash-att-badge">Aksi</span>`}
+          </li>
+        `).join("")}
+      </ul>
+    </details>
+
+    <!-- 3. Peta Nilai (Heatmap) -->
+    <section class="card dash-heat-card heatmap">
+      <div class="row dash-heat-header" style="margin:0 0 var(--s2)">
+        <div style="flex:1">
+          <h3 id="heat-title">Peta Nilai</h3>
+          <p class="muted" style="margin:0">Rata-rata kelas &times; mata pelajaran</p>
+        </div>
+        <div style="flex:0 0 auto; min-width:8rem">
+          <label class="muted" for="tg">Tingkat</label>
+          <select id="tg" aria-controls="dash-heatmap-tbl">${options(tks.map(t => [t, "Kelas " + t]), S.tg, "Semua")}</select>
+        </div>
+      </div>
+      ${matrix.length ? `
+        <p class="muted scroll-hint" style="font-size:0.75rem; margin-bottom:var(--s1)">&larr; Geser tabel untuk melihat seluruh mapel &rarr;</p>
+        <div class="tw dash-heat-tw" tabindex="0" role="region" aria-label="Tabel Peta Nilai">
+          <table id="dash-heatmap-tbl" class="dash-heat-tbl" aria-labelledby="heat-title">
+            <caption class="sr-only">Tabel nilai rata-rata per kelas dan mata pelajaran. Klik nama kelas untuk membuka halaman Nilai per Kelas, klik nama mata pelajaran untuk membuka halaman Nilai per Mapel.</caption>
+            <thead>
               <tr>
-                <th scope="row" class="dash-th-kelas">
-                  <button type="button" class="dash-heat-btn" data-act="nav-kelas" data-kelas="${esc(row.kelas)}" title="Lihat detail nilai Kelas ${esc(row.kelas)}" aria-label="Lihat detail nilai Kelas ${esc(row.kelas)}">
-                    Kelas ${esc(row.kelas)}
-                  </button>
-                </th>
-                ${row.mapelAvgs.map(v => heatCell(v)).join("")}
+                <th scope="col" class="dash-th-corner">Kelas</th>
+                ${d.mapel.map((m, i) => `
+                  <th scope="col" class="dash-th-mapel">
+                    <button type="button" class="dash-heat-btn" data-act="nav-mapel" data-mapel="${i}" title="${esc(label(m))}" aria-label="Lihat detail nilai mapel ${esc(label(m))}">
+                      <span class="dash-mapel-full">${esc(label(m))}</span>
+                      <span class="dash-mapel-short">${esc(shortLabel(m))}</span>
+                    </button>
+                  </th>
+                `).join("")}
               </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
-      <div class="dash-heat-legend" aria-hidden="true">
-        <span class="muted">Keterangan:</span>
-        <span class="dash-legend-item"><span class="dash-legend-swatch heat-1"></span> &lt;65</span>
-        <span class="dash-legend-item"><span class="dash-legend-swatch heat-2"></span> 65–74</span>
-        <span class="dash-legend-item"><span class="dash-legend-swatch heat-3"></span> 75–79</span>
-        <span class="dash-legend-item"><span class="dash-legend-swatch heat-4"></span> 80–87</span>
-        <span class="dash-legend-item"><span class="dash-legend-swatch heat-5"></span> &ge;88</span>
-        <span class="dash-legend-item"><span class="dash-legend-swatch heat-low-sample">▼</span> &lt; KKM ${KKM}</span>
-      </div>
-    ` : `<div class="empty">Tidak ada kelas yang cocok dengan filter.</div>`}
-  </section>
+            </thead>
+            <tbody>
+              ${matrix.map(row => `
+                <tr>
+                  <th scope="row" class="dash-th-kelas">
+                    <button type="button" class="dash-heat-btn" data-act="nav-kelas" data-kelas="${esc(row.kelas)}" title="Lihat detail nilai Kelas ${esc(row.kelas)}" aria-label="Lihat detail nilai Kelas ${esc(row.kelas)}">
+                      Kelas ${esc(row.kelas)}
+                    </button>
+                  </th>
+                  ${row.mapelAvgs.map(v => heatCell(v)).join("")}
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+        <div class="dash-heat-legend" aria-hidden="true">
+          <span class="muted">Keterangan:</span>
+          <span class="dash-legend-item"><span class="dash-legend-swatch heat-1"></span> &lt;65</span>
+          <span class="dash-legend-item"><span class="dash-legend-swatch heat-2"></span> 65–74</span>
+          <span class="dash-legend-item"><span class="dash-legend-swatch heat-3"></span> 75–79</span>
+          <span class="dash-legend-item"><span class="dash-legend-swatch heat-4"></span> 80–87</span>
+          <span class="dash-legend-item"><span class="dash-legend-swatch heat-5"></span> &ge;88</span>
+          <span class="dash-legend-item"><span class="dash-legend-swatch heat-low-sample">▼</span> &lt; KKM ${KKM}</span>
+        </div>
+      ` : `<div class="empty">Tidak ada kelas yang cocok dengan filter.</div>`}
+    </section>
 
-  <!-- 4. Rata-rata per Mapel & 5. Sebaran Nilai -->
-  <div class="grid two" style="margin-top:var(--s3)">
-    <section class="card">
+    <!-- 4. Rata-rata per Mapel -->
+    <section class="card barmapel">
       <h3>Rata-rata per mata pelajaran</h3>
       <p class="muted">Urut dari terendah ke tertinggi. Garis tegak = KKM ${KKM}</p>
       ${bars(avgByMapel(d))}
     </section>
-    <section class="card">
+
+    <!-- 5. Sebaran Nilai -->
+    <section class="card histogram">
       <h3>Sebaran nilai</h3>
       <p class="muted">Jumlah dan persentase nilai per rentang</p>
       ${vhist(distribution(d))}
     </section>
   </div>
 
-  <p style="margin-top:var(--s3)"><button data-act="export-all">Unduh semua nilai (.xlsx)</button></p>`;
+  <p style="margin-top:var(--s4)"><button data-act="export-all">Unduh semua nilai (.xlsx)</button></p>`;
 }
 function kelasRows() {
   const d = S.data, q = S.q.trim().toLowerCase();
@@ -1698,6 +1820,13 @@ function render() {
   $("#app").innerHTML = S.sess ? viewApp() : viewLogin();
   const el = keep && document.getElementById(keep);
   if (el) { el.focus(); if (pos != null && el.setSelectionRange && el.type === "search") el.setSelectionRange(pos, pos); }
+  if (typeof requestAnimationFrame !== "undefined") {
+    requestAnimationFrame(() => {
+      document.querySelectorAll(".dash-ring-bar[data-offset]").forEach(bar => {
+        bar.style.strokeDashoffset = bar.dataset.offset;
+      });
+    });
+  }
 }
 
 /* ===== Aksi ===== */
