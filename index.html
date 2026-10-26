@@ -492,89 +492,553 @@ button.dash-attention-item {
 .dash-attention-item.is-clickable:hover { box-shadow: var(--shadow-card); transform: none; }
 .dash-attention-item.is-clickable:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* Heatmap */
-.dash-heat-tw { max-height: 26rem; position: relative; }
-.dash-heat-tbl { border-collapse: separate; border-spacing: 0; width: 100%; }
-.dash-heat-tbl th, .dash-heat-tbl td {
-  padding: 2px; text-align: center; font-variant-numeric: tabular-nums;
-  border: 0;
+/* ===== PETA NILAI (HEATMAP REDESIGN) ===== */
+.dash-heat-card {
+  padding: var(--s3);
 }
-.dash-heat-tbl th { position: sticky; top: 0; z-index: 3; background: var(--surface); font-weight: 600; }
-.dash-th-corner {
-  position: sticky; top: 0; left: 0; z-index: 6; background: var(--surface);
-  min-width: 6rem; border-right: 1px solid var(--line); box-shadow: var(--shadow-sticky);
-  padding: 0 var(--s2); text-align: left; vertical-align: middle; font-size: 0.8125rem;
+.dash-heat-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
 }
-.dash-th-kelas {
-  position: sticky; left: 0; z-index: 4; background: var(--surface);
-  min-width: 6rem; text-align: left; border-right: 1px solid var(--line);
-  box-shadow: var(--shadow-sticky);
+.dash-heat-title-wrap h3 {
+  font-size: 1.125rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
 }
-.dash-th-mapel { min-width: 5.5rem; }
-.dash-heat-tbl th:nth-child(2), .dash-heat-tbl td:nth-child(2) {
-  position: static; left: auto; box-shadow: none; min-width: 5.5rem;
-  max-width: none; overflow: visible; text-align: center;
+.dash-heat-title-wrap p {
+  margin: 2px 0 0;
+  font-size: 0.8125rem;
 }
-.dash-heat-tbl th:nth-child(2) { position: sticky; top: 0; z-index: 3; }
-.dash-heat-tbl td:nth-child(2) { position: relative; z-index: 1; }
-.dash-heat-btn {
-  display: flex; align-items: center; justify-content: center; width: 100%;
-  min-height: 44px; padding: var(--s1) var(--s2); border: none; background: transparent;
-  color: inherit; font: inherit; font-size: 0.8125rem; font-weight: 600;
-  cursor: pointer; border-radius: 0; text-align: center;
-  transition: background var(--t-fast), color var(--t-fast);
-}
-.dash-th-kelas .dash-heat-btn { justify-content: flex-start; }
-.dash-heat-btn:hover { background: var(--accent-soft); color: var(--accent); border: none; }
-.dash-heat-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; z-index: 7; }
-.dash-mapel-short { display: none; }
-
-.dash-heat-cell {
-  min-width: 4.25rem; height: 38px; min-height: 38px; padding: var(--s1) var(--s2);
-  font-size: 0.8125rem; font-weight: 500; color: var(--text); vertical-align: middle;
-  position: relative; border-radius: 6px; transition: filter .15s ease;
-}
-.dash-heat-cell:hover { transform: none; }
-.dash-heat-tbl tbody tr:hover .dash-heat-cell { filter: brightness(.97); }
-@media (prefers-color-scheme: dark) {
-  .dash-heat-tbl tbody tr:hover .dash-heat-cell { filter: brightness(1.08); }
-}
-.dash-heat-cell.heat-1, .dash-legend-swatch.heat-1 { background: #e8f0ff; color: #1e3a8a; }
-.dash-heat-cell.heat-2, .dash-legend-swatch.heat-2 { background: #c7dbfc; color: #1e3a8a; }
-.dash-heat-cell.heat-3, .dash-legend-swatch.heat-3 { background: #9bbdf8; color: #0f172a; }
-.dash-heat-cell.heat-4, .dash-legend-swatch.heat-4 { background: #6e9cf3; color: #0f172a; }
-.dash-heat-cell.heat-5, .dash-legend-swatch.heat-5 { background: #3d6fe0; color: #ffffff; }
-
-@media (prefers-color-scheme: dark) {
-  .dash-heat-cell.heat-1, .dash-legend-swatch.heat-1 { background: #1a2333; color: #cbd5e1; }
-  .dash-heat-cell.heat-2, .dash-legend-swatch.heat-2 { background: #213153; color: #dbeafe; }
-  .dash-heat-cell.heat-3, .dash-legend-swatch.heat-3 { background: #2c4172; color: #e2e8f0; }
-  .dash-heat-cell.heat-4, .dash-legend-swatch.heat-4 { background: #3e5a9a; color: #ffffff; }
-  .dash-heat-cell.heat-5, .dash-legend-swatch.heat-5 { background: #4c6bb7; color: #ffffff; }
+.dash-heat-controls select#tg {
+  min-height: 38px;
+  min-width: 10rem;
+  font-size: 0.8125rem;
 }
 
-.dash-heat-cell.heat-none { background: var(--surface); color: var(--muted); }
-.dash-heat-cell.heat-low {
-  outline: 2px solid var(--dash-rose);
-  outline-offset: -2px;
+/* Subbar: Ringkasan & Toggle */
+.dash-heat-subbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+  margin: var(--s2-5) 0 var(--s3);
+  padding: var(--s2) var(--s3);
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+}
+.dash-heat-summary-text {
+  font-size: 0.8125rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+.dash-heat-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 var(--s2-5);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-control);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+.dash-heat-toggle-btn:hover {
+  background: var(--bg);
+  border-color: var(--border-control-hover);
+}
+.dash-heat-toggle-btn.is-active {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+  color: var(--bad);
   font-weight: 600;
 }
-.dash-low-marker { font-size: 0.75rem; margin-right: 2px; }
+.dash-heat-toggle-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.dash-heat-toggle-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background var(--t-fast);
+}
+.dash-heat-toggle-btn.is-active .dash-heat-toggle-dot {
+  background: var(--bad);
+}
+
+/* 3-Level Semantic Colors + Tanpa Data (Flat, Minimal 4.5:1 Contrast) */
+.heat-low {
+  background: #ffe4e6;
+  color: #9f1239;
+  border: 1px solid #fecdd3;
+}
+.heat-mid {
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+}
+.heat-good {
+  background: #ccfbf1;
+  color: #115e59;
+  border: 1px solid #99f6e4;
+}
+.heat-none {
+  background: var(--surface);
+  color: var(--text-muted);
+  border: 1.5px dashed #cbd5e1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .heat-low {
+    background: #38121a;
+    color: #fda4af;
+    border-color: #5c1d27;
+  }
+  .heat-mid {
+    background: #20222a;
+    color: #e2e8f0;
+    border-color: #333642;
+  }
+  .heat-good {
+    background: #0d2824;
+    color: #5eead4;
+    border-color: #134e48;
+  }
+  .heat-none {
+    background: #18181b;
+    color: #94a3b8;
+    border: 1.5px dashed #3f4048;
+  }
+}
+
+.dash-low-marker {
+  display: inline-block;
+  font-size: 0.6875rem;
+  margin-right: 3px;
+  vertical-align: baseline;
+}
+
+/* PC Matrix View (>= 700px) */
+.dash-heat-matrix {
+  width: 100%;
+}
+.dash-heat-scroll-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0 0 var(--s1);
+}
+.dash-heat-tw {
+  max-height: 28rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: inset -10px 0 8px -8px rgba(0,0,0,.1);
+}
+.dash-heat-tbl {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+.dash-heat-tbl th,
+.dash-heat-tbl td {
+  padding: 0;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+.dash-heat-tbl th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--surface);
+  font-weight: 600;
+}
+.dash-th-corner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  background: var(--surface);
+  min-width: 6.5rem;
+  border-right: 1px solid var(--line);
+  box-shadow: var(--shadow-sticky);
+  padding: 0 var(--s2);
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.8125rem;
+}
+.dash-th-kelas {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  background: var(--surface);
+  min-width: 6.5rem;
+  text-align: left;
+  border-right: 1px solid var(--line);
+  box-shadow: var(--shadow-sticky);
+}
+.dash-th-mapel {
+  min-width: 56px;
+  max-width: 8rem;
+  vertical-align: middle;
+}
+.dash-th-avg,
+.dash-td-avg {
+  position: sticky;
+  right: 0;
+  min-width: 5.25rem;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -2px 0 4px -2px rgba(0,0,0,.1);
+}
+.dash-th-avg {
+  z-index: 4;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0 var(--s2);
+  vertical-align: middle;
+}
+.dash-td-avg {
+  z-index: 2;
+  font-weight: 700;
+}
+.dash-td-avg .dash-heat-cell-btn {
+  font-weight: 700;
+}
+
+.dash-heat-tbl th:nth-child(2),
+.dash-heat-tbl td:nth-child(2) {
+  position: static;
+  left: auto;
+  box-shadow: none;
+  max-width: none;
+  overflow: visible;
+  text-align: center;
+}
+.dash-heat-tbl th:nth-child(2) {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+.dash-heat-tbl td:nth-child(2) {
+  position: relative;
+  z-index: 1;
+}
+
+.dash-heat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 44px;
+  padding: var(--s1) var(--s2);
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 0;
+  text-align: center;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.dash-th-kelas .dash-heat-btn {
+  justify-content: flex-start;
+  padding: 0 var(--s2);
+}
+.dash-heat-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: none;
+}
+.dash-heat-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  z-index: 7;
+}
+
+.dash-mapel-full {
+  display: block;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  white-space: normal;
+  word-break: break-word;
+}
+.dash-mapel-short {
+  display: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.dash-heat-cell {
+  min-width: 56px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  position: relative;
+}
+.dash-heat-cell-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 44px;
+  min-width: 56px;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  border-radius: 0;
+  transition: outline 120ms ease;
+}
+.dash-heat-cell-btn:hover {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  z-index: 5;
+}
+.dash-heat-cell-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  z-index: 7;
+}
+
+/* Dim non-low cells when toggle filter is active */
+.dash-heat-tbl.filter-low .dash-heat-cell:not(.heat-low) .dash-heat-cell-btn {
+  opacity: 0.25;
+}
+
+/* Tfoot Sticky */
+.dash-heat-tbl tfoot th,
+.dash-heat-tbl tfoot td {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  background: var(--surface);
+  border-top: 2px solid var(--line);
+  font-weight: 700;
+}
+.dash-heat-tbl tfoot th.dash-th-kelas {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  background: var(--surface);
+}
+.dash-heat-tbl tfoot td.dash-td-avg {
+  position: sticky;
+  bottom: 0;
+  right: 0;
+  z-index: 5;
+  background: var(--surface);
+}
+
+/* HP Cards Accordion View (< 700px) */
+.dash-heat-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+.dash-heat-accordion {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color var(--t-fast);
+}
+.dash-heat-accordion[open] {
+  border-color: var(--border-control);
+}
+.dash-heat-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+  padding: var(--s2-5) var(--s3);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  background: var(--surface);
+}
+.dash-heat-summary::-webkit-details-marker {
+  display: none;
+}
+.dash-heat-sum-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dash-heat-sum-name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+.dash-heat-sum-avg {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.dash-heat-sum-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.dash-heat-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--r-full);
+  white-space: nowrap;
+}
+.dash-heat-badge.is-low {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.dash-heat-badge.is-good {
+  background: var(--accent-soft);
+  color: var(--dash-emerald-fg);
+}
+.dash-heat-chevron {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: transform var(--t-fast);
+}
+.dash-heat-accordion[open] .dash-heat-chevron {
+  transform: rotate(180deg);
+}
+.dash-heat-card-body {
+  padding: 0 var(--s3) var(--s2-5);
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+.dash-heat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s1-5);
+  padding-top: var(--s2);
+}
+.dash-heat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s1);
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: var(--r-md);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  text-align: left;
+  transition: outline 120ms ease;
+}
+.dash-heat-item:hover {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+.dash-heat-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.dash-heat-item-name {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.dash-heat-item-val {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.dash-heat-card-foot {
+  margin-top: var(--s2);
+  text-align: right;
+}
+.dash-heat-kelas-link {
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dash-heat-kelas-link:hover {
+  text-decoration: underline;
+}
+
+/* Legenda (4 item) */
 .dash-heat-legend {
-  display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1);
-  margin-top: var(--s2); padding: var(--s2); background: var(--surface-2);
-  border-radius: var(--r-full); font: var(--font-micro);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+  margin-top: var(--s3);
+  padding: var(--s2) var(--s3);
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  font: var(--font-caption);
+  font-size: 0.75rem;
+  border: 1px solid var(--line);
+}
+.dash-legend-title {
+  font-weight: 600;
+  color: var(--text-muted);
 }
 .dash-legend-item {
-  display: inline-flex; align-items: center; gap: var(--s1);
-  padding: 4px 10px; border-radius: var(--r-full); background: var(--surface);
-  font-size: .75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s1-5);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text);
 }
-.dash-legend-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 2px; border: 1px solid var(--line); }
-.dash-legend-swatch.heat-low-sample {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: auto; min-width: 16px; height: 16px; padding: 0 2px;
-  outline: 1.5px dashed var(--bad); outline-offset: -1px; border: none; font-size: 0.75rem;
+.dash-legend-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-sm);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Breakpoint 700px: Switch antara Matrix dan Cards */
+@media (min-width: 700px) {
+  .dash-heat-matrix { display: block; }
+  .dash-heat-cards { display: none; }
+  .dash-heat-head { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+@media (max-width: 699px) {
+  .dash-heat-matrix { display: none; }
+  .dash-heat-cards { display: flex; flex-direction: column; gap: var(--s2); }
+  .dash-heat-scroll-hint { display: none !important; }
+  .dash-heat-head { flex-direction: column; align-items: stretch; gap: var(--s2); }
+  .dash-heat-controls { width: 100%; }
+  .dash-heat-controls select#tg { width: 100%; }
+  .dash-heat-subbar { flex-direction: column; align-items: stretch; gap: var(--s2); }
+  .dash-heat-toggle-btn { width: 100%; justify-content: center; }
 }
 
 /* Histogram Sebaran Nilai */
@@ -735,14 +1199,6 @@ button.dash-attention-item {
   .dash-bento > .histogram { grid-column: span 3; }
 }
 
-/* Tablet: Heatmap Singkatan Mapel */
-@media (max-width: 960px) {
-  .dash-mapel-full { display: none; }
-  .dash-mapel-short { display: inline; }
-  .dash-th-mapel,
-  .dash-heat-tbl th:nth-child(2),
-  .dash-heat-tbl td:nth-child(2) { min-width: 4.25rem; }
-}
 
 /* Tablet & HP: 2 Cincin, 3 Kartu Statistik */
 @media (max-width: 900px) {
@@ -814,19 +1270,6 @@ button.dash-attention-item {
   .dash-att-badge { display: none; }
 
   .dash-heat-card { padding: var(--s2-5); }
-  .dash-heat-header { flex-direction: column; align-items: stretch; gap: var(--s2); }
-  .dash-heat-header > div { min-width: 0; width: 100%; }
-  .dash-heat-header select#tg { width: 100%; }
-  .dash-heat-tw { width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--r-md); }
-  .dash-heat-tbl th, .dash-heat-tbl td, .dash-heat-cell, .dash-heat-btn { font-size: 0.75rem; }
-  .dash-heat-cell { min-width: 3.25rem; min-height: 34px; height: 34px; padding: 1px 2px; }
-  .dash-th-mapel,
-  .dash-heat-tbl th:nth-child(2),
-  .dash-heat-tbl td:nth-child(2) { min-width: 3.25rem; }
-  .dash-th-corner, .dash-th-kelas { min-width: 4.75rem; }
-  .dash-th-kelas .dash-heat-btn { padding: 0 var(--s1-5); font-size: 0.75rem; }
-  .dash-heat-legend { border-radius: var(--r-md); padding: var(--s1-5); gap: 4px; }
-  .dash-legend-item { padding: 2px 6px; font-size: 0.75rem; }
 
   .barmapel { padding: var(--s2-5); }
   .barmapel .bar, .bar {
@@ -1119,7 +1562,7 @@ function downloadXlsx(rows, fileName) {
 }
 
 /* ===== State ===== */
-const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", setupToken: "", nama: "", error: "", loading: false, cooldown: 0, updatedAt: store.get(DATA_KEY)?.updatedAt || null, _view: null, _hadData: false };
+const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", heatOnlyLow: false, setupToken: "", nama: "", error: "", loading: false, cooldown: 0, updatedAt: store.get(DATA_KEY)?.updatedAt || null, _view: null, _hadData: false };
 
 /* ===== Komponen tampilan ===== */
 const bars = items => items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track" role="meter" aria-valuenow="${i.value ?? 0}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(i.label)}: ${fmt(i.value)}"><div class="fill${i.value != null && i.value < KKM ? ' low' : ''}" style="width:${Math.min(100, i.value || 0)}%"></div><div class="kkm" style="left:${KKM}%" title="KKM ${KKM}"></div></div><span>${cell(i.value)}</span></div>`).join("");
@@ -1273,29 +1716,64 @@ function matrixAgg(d, tg) {
     }
   }
 
-  return ks.map((k, r) => ({
-    kelas: k,
-    mapelAvgs: Array.from({ length: nMapel }, (_, c) => counts[r][c] > 0 ? sums[r][c] / counts[r][c] : null)
-  }));
+  return ks.map((k, r) => {
+    const mapelAvgs = Array.from({ length: nMapel }, (_, c) => counts[r][c] > 0 ? sums[r][c] / counts[r][c] : null);
+    const validAvgs = mapelAvgs.filter(valid);
+    const rowAvg = validAvgs.length ? validAvgs.reduce((a, b) => a + b, 0) / validAvgs.length : null;
+    const belowCount = mapelAvgs.filter(v => v != null && v < KKM).length;
+    const mapels = d.mapel.map((m, j) => ({
+      mapelIdx: j,
+      label: label(m),
+      short: shortLabel(m),
+      val: mapelAvgs[j],
+      isLow: mapelAvgs[j] != null && mapelAvgs[j] < KKM
+    })).sort((a, b) => {
+      if (a.val == null && b.val == null) return 0;
+      if (a.val == null) return 1;
+      if (b.val == null) return -1;
+      return a.val - b.val;
+    });
+
+    return {
+      kelas: k,
+      mapelAvgs,
+      avg: rowAvg,
+      belowCount,
+      mapels
+    };
+  });
 }
 
 function heatLevel(v) {
-  if (v == null) return 0;
-  if (v < 65) return 1;
-  if (v < 75) return 2;
-  if (v < 80) return 3;
-  if (v < 88) return 4;
-  return 5;
+  if (v == null) return "none";
+  if (v < KKM) return "low";
+  if (v < KKM + 5) return "mid";
+  return "good";
 }
 
-function heatCell(v) {
-  if (v == null) return `<td class="dash-heat-cell heat-none" title="Belum ada data nilai diinput" aria-label="Belum ada data">–</td>`;
+function heatCell(v, kelas, mapelIdx, opts = {}) {
   const lvl = heatLevel(v);
-  const isLow = v < KKM;
-  const content = isLow ? `<span class="dash-low-marker" aria-hidden="true">▼</span>${fmt(v)}` : fmt(v);
-  const title = `${isLow ? 'Di bawah KKM: ' : ''}${fmt(v)}`;
-  const aria = `${fmt(v)}${isLow ? ', di bawah KKM' : ''}`;
-  return `<td class="dash-heat-cell heat-${lvl}${isLow ? ' heat-low' : ''}" title="${esc(title)}" aria-label="${esc(aria)}">${content}</td>`;
+  const isLow = lvl === "low";
+  const isNone = lvl === "none";
+  const numText = isNone ? "–" : fmt(v);
+  const displayText = isLow ? `<span class="dash-low-marker" aria-hidden="true">▼</span>${numText}` : numText;
+  const mapelName = opts.mapelName || "";
+  const title = isNone
+    ? `Belum ada data nilai${kelas ? ` Kelas ${kelas}` : ''}${mapelName ? ` mapel ${mapelName}` : ''}`
+    : `${mapelName ? `${mapelName}: ` : ''}${fmt(v)}${isLow ? ` (Di bawah KKM ${KKM})` : ''}${kelas ? ` (Kelas ${kelas})` : ''}`;
+  const aria = isNone
+    ? "Belum ada data nilai"
+    : `${fmt(v)}${isLow ? `, di bawah KKM ${KKM}` : ''}`;
+
+  if (opts.isStatic) {
+    return `<td class="dash-heat-cell heat-${lvl}" title="${esc(title)}" aria-label="${esc(aria)}">${displayText}</td>`;
+  }
+
+  return `<td class="dash-heat-cell heat-${lvl}">
+    <button type="button" class="dash-heat-cell-btn" data-act="nav-mapel" data-mapel="${mapelIdx}" data-kelas="${esc(kelas)}" title="${esc(title)}" aria-label="${esc(aria)}">
+      ${displayText}
+    </button>
+  </td>`;
 }
 
 function vhist(items) {
@@ -1487,60 +1965,173 @@ function viewDashboard() {
     </details>
 
     <!-- 3. Peta Nilai (Heatmap) -->
-    <section class="card dash-heat-card heatmap">
-      <div class="row dash-heat-header" style="margin:0 0 var(--s2)">
-        <div style="flex:1">
-          <h3 id="heat-title">Peta Nilai</h3>
-          <p class="muted" style="margin:0">Rata-rata kelas &times; mata pelajaran</p>
+    ${(() => {
+      const nMapel = d.mapel.length;
+      const allMatrixVals = matrix.flatMap(r => r.mapelAvgs).filter(valid);
+      const matrixTotalCells = allMatrixVals.length;
+      const matrixBelowCells = allMatrixVals.filter(v => v < KKM).length;
+      const summaryText = matrixTotalCells === 0
+        ? "Belum ada data nilai"
+        : matrixBelowCells > 0
+          ? `<strong>${matrixBelowCells}</strong> dari <strong>${matrixTotalCells}</strong> nilai di bawah KKM ${KKM}`
+          : `Semua <strong>${matrixTotalCells}</strong> nilai tuntas (&ge; ${KKM})`;
+
+      const displayMatrix = S.heatOnlyLow ? matrix.filter(r => r.belowCount > 0) : matrix;
+
+      const mapelColAvgs = Array.from({ length: nMapel }, (_, j) => {
+        const colVals = matrix.map(r => r.mapelAvgs[j]).filter(valid);
+        return colVals.length ? colVals.reduce((a, b) => a + b, 0) / colVals.length : null;
+      });
+      const matrixTotalAvg = allMatrixVals.length ? allMatrixVals.reduce((a, b) => a + b, 0) / allMatrixVals.length : null;
+
+      const hpRows = [...displayMatrix].sort((a, b) => {
+        if (b.belowCount !== a.belowCount) return b.belowCount - a.belowCount;
+        return natural(a.kelas, b.kelas);
+      });
+      let hpOpened = 0;
+
+      return `
+      <section class="card dash-heat-card heatmap">
+        <div class="dash-heat-head">
+          <div class="dash-heat-title-wrap">
+            <h3 id="heat-title">Peta Nilai</h3>
+            <p class="muted">Rata-rata kelas &times; mata pelajaran</p>
+          </div>
+          <div class="dash-heat-controls">
+            <label class="muted sr-only" for="tg">Filter Tingkat Kelas</label>
+            <select id="tg" aria-controls="dash-heatmap-tbl" aria-label="Filter Tingkat Kelas">
+              ${options(tks.map(t => [t, "Tingkat " + t]), S.tg, "Semua Tingkat")}
+            </select>
+          </div>
         </div>
-        <div style="flex:0 0 auto; min-width:8rem">
-          <label class="muted" for="tg">Tingkat</label>
-          <select id="tg" aria-controls="dash-heatmap-tbl">${options(tks.map(t => [t, "Kelas " + t]), S.tg, "Semua")}</select>
+
+        <div class="dash-heat-subbar">
+          <div class="dash-heat-summary-text" aria-live="polite">
+            ${summaryText}
+          </div>
+          <button type="button" class="dash-heat-toggle-btn${S.heatOnlyLow ? ' is-active' : ''}" data-act="toggle-heat-low" aria-pressed="${S.heatOnlyLow ? 'true' : 'false'}" title="Tampilkan hanya nilai di bawah KKM">
+            <span class="dash-heat-toggle-dot" aria-hidden="true"></span>
+            Hanya di bawah KKM
+          </button>
         </div>
-      </div>
-      ${matrix.length ? `
-        <p class="muted scroll-hint" style="font-size:0.75rem; margin-bottom:var(--s1)">&larr; Geser tabel untuk melihat seluruh mapel &rarr;</p>
-        <div class="tw dash-heat-tw" tabindex="0" role="region" aria-label="Tabel Peta Nilai">
-          <table id="dash-heatmap-tbl" class="dash-heat-tbl" aria-labelledby="heat-title">
-            <caption class="sr-only">Tabel nilai rata-rata per kelas dan mata pelajaran. Klik nama kelas untuk membuka halaman Nilai per Kelas, klik nama mata pelajaran untuk membuka halaman Nilai per Mapel.</caption>
-            <thead>
-              <tr>
-                <th scope="col" class="dash-th-corner">Kelas</th>
-                ${d.mapel.map((m, i) => `
-                  <th scope="col" class="dash-th-mapel">
-                    <button type="button" class="dash-heat-btn" data-act="nav-mapel" data-mapel="${i}" title="${esc(label(m))}" aria-label="Lihat detail nilai mapel ${esc(label(m))}">
-                      <span class="dash-mapel-full">${esc(label(m))}</span>
-                      <span class="dash-mapel-short">${esc(shortLabel(m))}</span>
-                    </button>
-                  </th>
-                `).join("")}
-              </tr>
-            </thead>
-            <tbody>
-              ${matrix.map(row => `
-                <tr>
-                  <th scope="row" class="dash-th-kelas">
-                    <button type="button" class="dash-heat-btn" data-act="nav-kelas" data-kelas="${esc(row.kelas)}" title="Lihat detail nilai Kelas ${esc(row.kelas)}" aria-label="Lihat detail nilai Kelas ${esc(row.kelas)}">
-                      Kelas ${esc(row.kelas)}
-                    </button>
-                  </th>
-                  ${row.mapelAvgs.map(v => heatCell(v)).join("")}
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>
-        <div class="dash-heat-legend" aria-hidden="true">
-          <span class="muted">Keterangan:</span>
-          <span class="dash-legend-item"><span class="dash-legend-swatch heat-1"></span> &lt;65</span>
-          <span class="dash-legend-item"><span class="dash-legend-swatch heat-2"></span> 65–74</span>
-          <span class="dash-legend-item"><span class="dash-legend-swatch heat-3"></span> 75–79</span>
-          <span class="dash-legend-item"><span class="dash-legend-swatch heat-4"></span> 80–87</span>
-          <span class="dash-legend-item"><span class="dash-legend-swatch heat-5"></span> &ge;88</span>
-          <span class="dash-legend-item"><span class="dash-legend-swatch heat-low-sample">▼</span> &lt; KKM ${KKM}</span>
-        </div>
-      ` : `<div class="empty">Tidak ada kelas yang cocok dengan filter.</div>`}
-    </section>
+
+        ${displayMatrix.length ? `
+          <!-- Tampilan PC / Tablet (>= 700px): Matriks Tabel -->
+          <div class="dash-heat-matrix">
+            <p class="muted scroll-hint dash-heat-scroll-hint" id="heat-scroll-hint" style="display:none">&larr; Geser tabel untuk melihat seluruh mapel &rarr;</p>
+            <div class="tw dash-heat-tw" tabindex="0" role="region" aria-label="Tabel Peta Nilai">
+              <table id="dash-heatmap-tbl" class="dash-heat-tbl${S.heatOnlyLow ? ' filter-low' : ''}" aria-labelledby="heat-title">
+                <caption class="sr-only">Tabel nilai rata-rata per kelas dan mata pelajaran. Klik nama kelas untuk membuka halaman Nilai per Kelas, klik nama mapel atau sel nilai untuk membuka halaman Nilai per Mapel.</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" class="dash-th-corner">Kelas</th>
+                    ${d.mapel.map((m, j) => `
+                      <th scope="col" class="dash-th-mapel">
+                        <button type="button" class="dash-heat-btn" data-act="nav-mapel" data-mapel="${j}" title="${esc(label(m))}" aria-label="Lihat detail nilai mapel ${esc(label(m))}">
+                          <span class="dash-mapel-full">${esc(label(m))}</span>
+                          <span class="dash-mapel-short">${esc(shortLabel(m))}</span>
+                        </button>
+                      </th>
+                    `).join("")}
+                    <th scope="col" class="dash-th-avg">Rata-rata</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${displayMatrix.map(row => `
+                    <tr>
+                      <th scope="row" class="dash-th-kelas">
+                        <button type="button" class="dash-heat-btn" data-act="nav-kelas" data-kelas="${esc(row.kelas)}" title="Lihat detail nilai Kelas ${esc(row.kelas)}" aria-label="Lihat detail nilai Kelas ${esc(row.kelas)}">
+                          Kelas ${esc(row.kelas)}
+                        </button>
+                      </th>
+                      ${row.mapelAvgs.map((v, j) => heatCell(v, row.kelas, j, { mapelName: label(d.mapel[j]) })).join("")}
+                      <td class="dash-td-avg">
+                        <button type="button" class="dash-heat-cell-btn" data-act="nav-kelas" data-kelas="${esc(row.kelas)}" title="Rata-rata Kelas ${esc(row.kelas)}: ${fmt(row.avg)}">
+                          <b>${cell(row.avg)}</b>
+                        </button>
+                      </td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th scope="row" class="dash-th-kelas">Rata-rata mapel</th>
+                    ${d.mapel.map((m, j) => {
+                      const cAvg = mapelColAvgs[j];
+                      return `<td class="dash-heat-cell heat-${heatLevel(cAvg)}">
+                        <button type="button" class="dash-heat-cell-btn" data-act="nav-mapel" data-mapel="${j}" title="Rata-rata mapel ${esc(label(m))}: ${fmt(cAvg)}" aria-label="Rata-rata mapel ${esc(label(m))}: ${fmt(cAvg)}">
+                          <b>${fmt(cAvg)}</b>
+                        </button>
+                      </td>`;
+                    }).join("")}
+                    <td class="dash-td-avg dash-heat-cell heat-${heatLevel(matrixTotalAvg)}">
+                      <b>${fmt(matrixTotalAvg)}</b>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tampilan HP (< 700px): Kartu Akordion per Kelas -->
+          <div class="dash-heat-cards" role="region" aria-label="Daftar Nilai per Kelas">
+            ${hpRows.map(row => {
+              const isOpen = row.belowCount > 0 && hpOpened < 2;
+              if (isOpen) hpOpened++;
+              const mapelsToShow = S.heatOnlyLow
+                ? row.mapels.filter(m => m.val != null && m.val < KKM)
+                : row.mapels;
+              return `
+                <details class="dash-heat-accordion"${isOpen ? " open" : ""}>
+                  <summary class="dash-heat-summary">
+                    <div class="dash-heat-sum-info">
+                      <span class="dash-heat-sum-name">Kelas ${esc(row.kelas)}</span>
+                      <span class="dash-heat-sum-avg">Rata-rata: <b>${row.avg != null ? fmt(row.avg) : '–'}</b></span>
+                    </div>
+                    <div class="dash-heat-sum-meta">
+                      ${row.belowCount > 0
+                        ? `<span class="dash-heat-badge is-low"><span class="dash-low-marker" aria-hidden="true">▼</span>${row.belowCount} di bawah KKM</span>`
+                        : `<span class="dash-heat-badge is-good">Semua tuntas</span>`
+                      }
+                      <span class="dash-heat-chevron" aria-hidden="true">▾</span>
+                    </div>
+                  </summary>
+                  <div class="dash-heat-card-body">
+                    <div class="dash-heat-grid">
+                      ${mapelsToShow.map(m => {
+                        const lvl = heatLevel(m.val);
+                        const isLow = lvl === "low";
+                        const valText = m.val != null ? fmt(m.val) : "–";
+                        return `
+                          <button type="button" class="dash-heat-item heat-${lvl}" data-act="nav-mapel" data-mapel="${m.mapelIdx}" data-kelas="${esc(row.kelas)}" aria-label="${esc(m.label)}: ${valText}, Kelas ${esc(row.kelas)}">
+                            <span class="dash-heat-item-name" title="${esc(m.label)}">${esc(m.short || m.label)}</span>
+                            <span class="dash-heat-item-val">${isLow ? '<span class="dash-low-marker" aria-hidden="true">▼</span>' : ''}${valText}</span>
+                          </button>
+                        `;
+                      }).join("")}
+                    </div>
+                    <div class="dash-heat-card-foot">
+                      <button type="button" class="dash-heat-kelas-link" data-act="nav-kelas" data-kelas="${esc(row.kelas)}">
+                        Buka detail Kelas ${esc(row.kelas)} &rarr;
+                      </button>
+                    </div>
+                  </div>
+                </details>
+              `;
+            }).join("")}
+          </div>
+
+          <!-- Legenda (4 item) -->
+          <div class="dash-heat-legend" aria-hidden="true">
+            <span class="dash-legend-title">Keterangan:</span>
+            <span class="dash-legend-item"><span class="dash-legend-swatch heat-low"><span class="dash-low-marker">▼</span></span> Di bawah KKM (&lt; ${KKM})</span>
+            <span class="dash-legend-item"><span class="dash-legend-swatch heat-mid"></span> Mendekati KKM (${KKM}–${KKM + 4})</span>
+            <span class="dash-legend-item"><span class="dash-legend-swatch heat-good"></span> Tuntas (&ge; ${KKM + 5})</span>
+            <span class="dash-legend-item"><span class="dash-legend-swatch heat-none">–</span> Tanpa data</span>
+          </div>
+        ` : `<div class="empty">${S.heatOnlyLow ? `Tidak ada nilai di bawah KKM ${S.tg ? `di Tingkat ${S.tg}` : ''}.` : `Tidak ada kelas yang cocok dengan filter.`}</div>`}
+      </section>`;
+    })()}
 
     <!-- 4. Rata-rata per Mapel -->
     <section class="card barmapel">
@@ -1750,6 +2341,11 @@ function render() {
       document.querySelectorAll(".dash-ring-bar[data-offset]").forEach(bar => {
         bar.style.strokeDashoffset = bar.dataset.offset;
       });
+      const heatTw = document.querySelector(".dash-heat-tw");
+      const heatHint = document.getElementById("heat-scroll-hint");
+      if (heatTw && heatHint) {
+        heatHint.style.display = heatTw.scrollWidth > heatTw.clientWidth ? "block" : "none";
+      }
     });
   }
 }
@@ -1857,7 +2453,11 @@ document.addEventListener("click", e => {
   else if (act === "nav-mapel") {
     S.view = "mapel";
     S.mapel = Number(a.dataset.mapel);
-    S.mapelKelas = "";
+    S.mapelKelas = a.dataset.kelas || "";
+    render();
+  }
+  else if (act === "toggle-heat-low") {
+    S.heatOnlyLow = !S.heatOnlyLow;
     render();
   }
   else if (act === "logout") {
