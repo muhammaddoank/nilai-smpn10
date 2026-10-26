@@ -1687,7 +1687,12 @@ function viewKelas() {
 }
 function mapelRows() {
   const i = S.mapel;
-  return S.data.siswa.filter(s => !S.mapelKelas || s.kelas === S.mapelKelas).filter(s => valid(s.nilai[i])).sort((a, b) => b.nilai[i] - a.nilai[i]);
+  return S.data.siswa
+    .filter(s => !S.mapelKelas || s.kelas === S.mapelKelas)
+    .filter(s => valid(s.nilai[i]))
+    .sort(S.mapelKelas
+      ? (a, b) => natural(a.nama, b.nama) || natural(a.kelas, b.kelas) || natural(String(a.no_urut), String(b.no_urut))
+      : (a, b) => (b.nilai[i] - a.nilai[i]) || natural(a.nama, b.nama) || natural(a.kelas, b.kelas) || natural(String(a.no_urut), String(b.no_urut)));
 }
 function viewMapel() {
   const d = S.data, i = S.mapel, rows = mapelRows();
@@ -1698,6 +1703,7 @@ function viewMapel() {
 
   const pkList = perClassTuntas(d, i).filter(c => !S.mapelKelas || c.kelas === S.mapelKelas);
   const remList = remedialList(d, i).filter(s => !S.mapelKelas || s.kelas === S.mapelKelas);
+  const sortInfo = S.mapelKelas ? "Diurutkan berdasarkan nama (A–Z)" : "Diurutkan dari nilai tertinggi ke terendah";
 
   return `<div class="row"><div><label for="mapel">Mata pelajaran</label><select id="mapel">${options(d.mapel.map((m, k) => [k, label(m)]), i)}</select></div>
     <div><label for="mk">Kelas</label><select id="mk">${options(kelasList(d).map(k => [k, "Kelas " + k]), S.mapelKelas, "Semua kelas")}</select></div>
@@ -1741,11 +1747,12 @@ function viewMapel() {
   <section class="card mp-table" style="margin-bottom:var(--s3); padding:0; overflow:hidden">
     <div style="padding:var(--s3) var(--s3) var(--s2)">
       <h3 id="mp-tbl-title">Daftar Nilai Siswa</h3>
-      <p class="muted" style="margin:0">Diurutkan dari nilai tertinggi ke terendah</p>
+      <p id="mp-tbl-desc" class="muted" style="margin:0">${sortInfo}</p>
     </div>
     ${rows.length ? `
       <div class="tw" style="border:0">
-        <table aria-labelledby="mp-tbl-title">
+        <table aria-labelledby="mp-tbl-title" aria-describedby="mp-tbl-desc">
+          <caption class="sr-only">Daftar nilai siswa. ${sortInfo}.</caption>
           <thead>
             <tr>
               <th scope="col" style="width:3rem">#</th>
