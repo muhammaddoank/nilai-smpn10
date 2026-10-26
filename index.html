@@ -1127,6 +1127,33 @@ details.dash-attention:not([open]) summary.dash-attention-head {
 .no-anim .dash-ring-pct,.no-anim .dash-ring-sub,.no-anim .dash-ring-caption{animation:none}
 .no-anim .dash-ring-bar{transition:none}
 
+/* ===== R4. Satu aksen (teal) + navy sebagai warna merek, tanpa gradien ===== */
+:root{
+  --brand:#12355b;                 /* navy: judul/header */
+  --accent:#0f766e;                /* teal: aksi + "tuntas" (putih di atasnya ≈5,5:1) */
+  --accent-hover:#115e59; --accent-soft:#e6f4f1; --accent-fg:#fff;
+  --border-control:#718096; --border-control-hover:#475569;   /* ≥3:1 */
+  --bad:#be123c; --bad-bg:#fff1f2;
+  --dash-emerald:#0f766e; --dash-emerald-bg:#e6f4f1; --dash-emerald-fg:#0f5f58;
+  --dash-indigo:#0f766e;  --dash-indigo-bg:#e6f4f1;
+  --font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --brand:#cfe0f5; --accent:#2dd4bf; --accent-hover:#5eead4; --accent-soft:#12302d; --accent-fg:#04201d;
+  --border-control:#71717a; --border-control-hover:#a1a1aa;
+  --dash-emerald:#2dd4bf; --dash-emerald-bg:#0f2a27; --dash-emerald-fg:#5eead4;
+  --dash-indigo:#2dd4bf;  --dash-indigo-bg:#0f2a27;
+}}
+
+/* Hilangkan gradien & efek berat */
+.fill,.dash-vhist-col:nth-child(n) .dash-vhist-fill{background:var(--accent)}
+.fill.low{background:var(--bad)}
+.dash-ring-card:nth-child(n){background:var(--surface)}
+.dash-ring-card:nth-child(n) .dash-ring-bar{stroke:var(--accent);filter:none}
+.dash-heat-cell:hover{transform:none}
+.dash-attention-item.is-clickable:hover{transform:none}
+header h1{color:var(--brand);font-size:1.25rem}
+
 /* ===== MAPEL VIEW v4 ===== */
 /* Status badge di tabel */
 .mp-status {
@@ -2037,7 +2064,7 @@ const VIEWS = { dashboard: ["Dashboard", viewDashboard], kelas: ["Nilai per kela
 
 function viewApp() {
   const body = S.loading && !S.data ? `<div class="grid stats"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>` : S.data ? (S.data.siswa.length ? VIEWS[S.view][1]() : `<div class="card empty">Belum ada data siswa di spreadsheet.</div>`) : "";
-  return `<header class="top"><div class="wrap"><h1 style="font-size:1.125rem; font-weight:700; margin:0">Rekap Nilai</h1>
+  return `<header class="top"><div class="wrap"><h1 style="font-weight:700; margin:0">Rekap Nilai</h1>
     <nav class="bottom-nav" aria-label="Menu utama">${Object.entries(VIEWS).map(([k, [t]]) => `<button data-view="${k}"${k === S.view ? ' aria-current="page"' : ""}>${t}</button>`).join("")}</nav>
     <div style="display:flex;gap:var(--s2)"><button data-act="refresh"${S.loading || S.cooldown ? " disabled" : ""}>${S.loading ? "Memuat…" : S.cooldown ? `Segarkan (${S.cooldown})` : "Segarkan"}</button><button class="subtle" data-act="logout">Keluar</button></div></div></header>
   <div class="wrap" aria-busy="${S.loading}">${S.error ? `<div class="banner" role="alert"><span>${esc(S.error)}</span><button data-act="retry">Coba lagi</button></div>` : ""}${body}</div>`;
