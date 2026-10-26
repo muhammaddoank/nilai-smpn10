@@ -178,6 +178,186 @@ tfoot td:first-child,tfoot td:nth-child(2){z-index:3}
 .dash-vhist-fill{width:100%;background:var(--accent);border-radius:calc(var(--r-sm) - 2px) calc(var(--r-sm) - 2px) 0 0;transition:height var(--t-normal)}
 .dash-vhist-lbl{margin-top:var(--s1);font-size:0.6875rem;font-weight:500;color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums}
 @media (max-width:360px){.dash-vhist-num{font-size:0.75rem}.dash-vhist-pct{font-size:0.625rem}.dash-vhist-lbl{font-size:0.625rem}}
+/* ===== DESIGN REFACTOR v2 ===== */
+:root {
+  /* 1. Skala Spacing Tambahan */
+  --s1-5: 6px;
+  --s2-5: 12px;
+  --s6: 48px;
+
+  /* 2. Radius Kartu */
+  --r-lg: 12px;
+  --r-xl: 16px;
+
+  /* 3. Border Kontrol */
+  --border-control: #cbd5e1;
+  --border-control-hover: #94a3b8;
+
+  /* 4. Shadow Kartu (Light) */
+  --shadow-card: 0 1px 2px 0 rgba(15,23,42,.04), 0 1px 3px 0 rgba(15,23,42,.06);
+  --shadow-card-hover: 0 4px 10px -2px rgba(15,23,42,.08), 0 2px 4px -2px rgba(15,23,42,.05);
+
+  /* 5. Hover Baris Tabel */
+  --row-hover: #f1f5f9;
+
+  /* 6. Accent Sekunder (Nav Aktif) & Surface-2 */
+  --accent-soft: #e0ecff;
+  --surface-2: #f1f5f9;
+
+  /* 8. Heatmap Steps (Light: WCAG AA Pass >= 4.5:1) */
+  --heat-1: #eaf1ff;
+  --heat-2: #cfe0fd;
+  --heat-3: #a8c4fb;
+  --heat-4: #356ad4;
+  --heat-5: #1d4ed8;
+
+  /* 9. Font Caption & Micro */
+  --font-caption: 400 0.8125rem/1.45 var(--font-family);
+  --font-micro: 500 0.75rem/1.35 var(--font-family);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 3. Border Kontrol (Dark) */
+    --border-control: #3f4048;
+    --border-control-hover: #52535c;
+
+    /* 4. Shadow Kartu (Dark) */
+    --shadow-card: 0 1px 2px 0 rgba(0,0,0,.35), 0 1px 3px 0 rgba(0,0,0,.25);
+    --shadow-card-hover: 0 4px 10px -2px rgba(0,0,0,.5);
+
+    /* 5. Hover Baris Tabel (Dark) */
+    --row-hover: #1c1d23;
+
+    /* 6. Accent Sekunder (Dark) & Surface-2 */
+    --accent-soft: #1e2b4a;
+    --surface-2: #1f2026;
+
+    /* 8. Heatmap Steps (Dark: WCAG AA Pass >= 4.5:1) */
+    --heat-1: #1e2636;
+    --heat-2: #233452;
+    --heat-3: #2d456f;
+    --heat-4: #39578f;
+    --heat-5: #4a6eb0;
+  }
+}
+
+/* 1. Spacing Aplikasi Minimal */
+header .wrap {
+  gap: var(--s2-5);
+}
+.grid.two {
+  gap: var(--s3);
+}
+
+/* 2. Radius Kartu */
+.card,
+.login,
+.dash-ring-card,
+.dash-attention {
+  border-radius: var(--r-lg);
+}
+
+/* 3. Border Kontrol */
+button:hover:not(:disabled),
+input:hover,
+select:hover {
+  border-color: var(--border-control-hover);
+}
+button.primary:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+button.subtle:hover:not(:disabled) {
+  border-color: transparent;
+}
+.dash-heat-btn:hover {
+  border: none;
+}
+
+/* 4. Shadow Kartu & Hover Transition */
+@media (hover: hover) {
+  .card:not(.stat):not(.dash-ring-card) {
+    transition: box-shadow var(--t-normal);
+  }
+  .card:not(.stat):not(.dash-ring-card):hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+/* 5. Hover Baris Tabel */
+.tw > table:not(.dash-heat-tbl) tbody tr {
+  transition: background var(--t-fast);
+}
+.tw > table:not(.dash-heat-tbl) tbody tr:hover td,
+.tw > table:not(.dash-heat-tbl) tbody tr:hover td:first-child,
+.tw > table:not(.dash-heat-tbl) tbody tr:hover td:nth-child(2) {
+  background: var(--row-hover);
+}
+
+/* 6. Accent Sekunder (Nav Aktif & Hover) */
+nav button[aria-current="page"],
+nav.bottom-nav button[aria-current="page"] {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+  font-weight: 600;
+}
+nav button:hover,
+nav.bottom-nav button:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: transparent;
+}
+nav button[aria-current="page"]:hover,
+nav.bottom-nav button[aria-current="page"]:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* 7. KKM Marker */
+.kkm {
+  background: var(--text);
+  opacity: .35;
+  box-shadow: none;
+  transition: opacity var(--t-fast);
+}
+@media (prefers-color-scheme: dark) {
+  .kkm {
+    background: #ffffff;
+    opacity: .7;
+  }
+}
+
+/* 8. Heatmap Step Kontras */
+.dash-heat-cell.heat-1, .dash-legend-swatch.heat-1 { background: #eaf1ff; color: #1e3a8a; }
+.dash-heat-cell.heat-2, .dash-legend-swatch.heat-2 { background: #cfe0fd; color: #1e3a8a; }
+.dash-heat-cell.heat-3, .dash-legend-swatch.heat-3 { background: #a8c4fb; color: #0f172a; }
+.dash-heat-cell.heat-4, .dash-legend-swatch.heat-4 { background: #356ad4; color: #ffffff; }
+.dash-heat-cell.heat-5, .dash-legend-swatch.heat-5 { background: #1d4ed8; color: #ffffff; }
+
+@media (prefers-color-scheme: dark) {
+  .dash-heat-cell.heat-1, .dash-legend-swatch.heat-1 { background: #1e2636; color: #cbd5e1; }
+  .dash-heat-cell.heat-2, .dash-legend-swatch.heat-2 { background: #233452; color: #dbeafe; }
+  .dash-heat-cell.heat-3, .dash-legend-swatch.heat-3 { background: #2d456f; color: #e2e8f0; }
+  .dash-heat-cell.heat-4, .dash-legend-swatch.heat-4 { background: #39578f; color: #ffffff; }
+  .dash-heat-cell.heat-5, .dash-legend-swatch.heat-5 { background: #4a6eb0; color: #ffffff; }
+}
+
+/* 9. Font Caption Tabel + Ellipsis */
+.bar {
+  grid-template-columns: 8.5rem minmax(0, 1fr) 3.75rem;
+}
+.bar > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 440px) {
+  .bar {
+    grid-template-columns: 1fr auto;
+  }
+}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
