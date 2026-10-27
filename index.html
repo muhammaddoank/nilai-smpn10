@@ -181,8 +181,10 @@ h2 { font: var(--font-h1); }
 h3 { font: var(--font-h2); }
 .muted { color: var(--muted); font: var(--font-caption); }
 .wrap { max-width: 72rem; margin: 0 auto; padding: var(--s3); }
-header.top { border-bottom: 1px solid var(--line); background: var(--surface); }
+header.top { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--line); background: var(--surface); }
 header .wrap { display: flex; flex-wrap: wrap; gap: var(--s2-5); align-items: center; justify-content: space-between; padding-block: var(--s2); }
+.header-actions { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+.header-actions button { display: inline-flex; align-items: center; gap: 6px; }
 
 nav, nav.bottom-nav { display: flex; gap: var(--s1); overflow-x: auto; }
 nav button, nav.bottom-nav button { border-color: transparent; background: none; color: inherit; }
@@ -320,6 +322,20 @@ tfoot td:first-child, tfoot td:nth-child(2) { z-index: 3; }
   background: var(--row-hover);
 }
 
+/* Kolom nilai lebih ramping agar seluruh 10 mapel muat di 1080px */
+.tw > table:not(.dash-heat-tbl) th:nth-child(n+3) {
+  white-space: normal;
+  line-height: 1.2;
+  text-align: center;
+  vertical-align: bottom;
+  padding: 8px 4px;
+  min-width: 3.5rem;
+  max-width: 5.5rem;
+}
+.tw > table:not(.dash-heat-tbl) td:nth-child(n+3) {
+  padding-inline: 4px;
+}
+
 /* Bar / Meter */
 .bar {
   display: grid; grid-template-columns: 8.5rem minmax(0, 1fr) 3.75rem;
@@ -407,15 +423,19 @@ tfoot td:first-child, tfoot td:nth-child(2) { z-index: 3; }
   pointer-events: none;
 }
 .dash-ring-pct {
-  font-size: 1.25rem; font-weight: 700; line-height: 1.1;
+  font-size: 1.5rem; font-weight: 700; line-height: 1.1;
   font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
 }
 .dash-ring-sub {
-  font-size: 0.625rem; color: var(--muted); text-transform: uppercase;
-  letter-spacing: .02em; margin-top: 2px;
+  margin-top: var(--s2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 .dash-ring-caption {
-  margin-top: var(--s2); font-size: 0.75rem; color: var(--text-muted);
+  margin-top: 2px; font-size: 0.75rem; color: var(--text-muted);
   text-align: center; font-variant-numeric: tabular-nums;
 }
 
@@ -437,6 +457,7 @@ tfoot td:first-child, tfoot td:nth-child(2) { z-index: 3; }
 .muted.stat-label {
   font-size: .75rem; text-transform: uppercase; letter-spacing: .08em;
   font-weight: 600; color: var(--text-muted);
+  white-space: nowrap;
 }
 .stat-trend { font-size: .75rem; font-weight: 600; margin-top: 4px; }
 .stat-trend.is-up { color: var(--dash-emerald-fg); }
@@ -652,11 +673,16 @@ button.dash-attention-item {
   margin: 0 0 var(--s1);
 }
 .dash-heat-tw {
-  max-height: 28rem;
+  max-height: 70vh;
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: var(--r-md);
-  box-shadow: inset -10px 0 8px -8px rgba(0,0,0,.1);
+  box-shadow: inset -10px 0 8px -8px rgba(0,0,0,.1), inset 0 -10px 8px -8px rgba(0,0,0,.15);
+}
+.dash-heat-tw th {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
 }
 .dash-heat-tbl {
   border-collapse: separate;
@@ -703,7 +729,7 @@ button.dash-attention-item {
   box-shadow: var(--shadow-sticky);
 }
 .dash-th-mapel {
-  min-width: 56px;
+  min-width: 6.5ch;
   max-width: 8rem;
   vertical-align: middle;
 }
@@ -736,6 +762,7 @@ button.dash-attention-item {
   position: static;
   left: auto;
   box-shadow: none;
+  min-width: 6.5ch;
   max-width: none;
   overflow: visible;
   text-align: center;
@@ -745,7 +772,7 @@ button.dash-attention-item {
   top: 0;
   z-index: 3;
 }
-.dash-heat-tbl td:nth-child(2) {
+.dash-heat-tbl tbody td:nth-child(2) {
   position: relative;
   z-index: 1;
 }
@@ -789,7 +816,9 @@ button.dash-attention-item {
   font-size: 0.75rem;
   line-height: 1.25;
   white-space: normal;
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
 }
 .dash-mapel-short {
   display: none;
@@ -849,6 +878,10 @@ button.dash-attention-item {
   background: var(--surface);
   border-top: 2px solid var(--line);
   font-weight: 700;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  vertical-align: middle;
 }
 .dash-heat-tbl tfoot th.dash-th-kelas {
   position: sticky;
@@ -856,6 +889,7 @@ button.dash-attention-item {
   left: 0;
   z-index: 5;
   background: var(--surface);
+  padding: 0 var(--s2);
 }
 .dash-heat-tbl tfoot td.dash-td-avg {
   position: sticky;
@@ -863,6 +897,17 @@ button.dash-attention-item {
   right: 0;
   z-index: 5;
   background: var(--surface);
+}
+.dash-heat-tw tfoot td:first-of-type,
+.dash-heat-tbl tfoot td:first-of-type,
+.dash-heat-tbl tfoot td:nth-child(2) {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  padding: 0;
+  border-top: 2px solid var(--line);
+  min-width: 6.5ch;
+  max-width: none;
 }
 
 /* HP Cards Accordion View (< 700px) */
@@ -972,9 +1017,11 @@ button.dash-attention-item {
 }
 .dash-heat-item-name {
   font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.25;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
   flex: 1;
 }
 .dash-heat-item-val {
@@ -1262,15 +1309,16 @@ button.dash-attention-item {
 @media (max-width: 600px) {
   .dash-ring-card { padding: var(--s2) var(--s1-5); }
   .dash-ring-box, .dash-ring-svg { width: 84px; height: 84px; }
-  .dash-ring-pct { font-size: 1.25rem; }
-  .dash-ring-sub { font-size: 0.75rem; letter-spacing: 0.04em; }
-  .dash-ring-caption { font-size: 0.75rem; line-height: 1.25; margin-top: 4px; }
+  .dash-ring-pct { font-size: 1.375rem; }
+  .dash-ring-sub { font-size: 0.6875rem; letter-spacing: .04em; }
+  .dash-ring-caption { font-size: 0.75rem; line-height: 1.25; margin-top: 2px; }
 
   .stat-tile { padding: var(--s2-5); }
   .stat-tile b { font-size: 1.5rem; }
   .stat-icon { width: 28px; height: 28px; border-radius: 8px; }
   .stat-icon svg { width: 15px; height: 15px; }
   .stat-head { gap: var(--s1-5); margin-bottom: var(--s1); }
+  .muted.stat-label { font-size: .6875rem; letter-spacing: .05em; }
   .stat-trend { display: none; }
 
   .dash-attention { padding: var(--s2-5); }
@@ -1313,6 +1361,17 @@ button.dash-attention-item {
 
 @media (max-width: 440px) {
   .bar { grid-template-columns: 1fr auto; }
+  header .wrap { padding: var(--s2) var(--s2-5); }
+  .header-actions { flex-wrap: nowrap; gap: var(--s1); }
+  .header-user { display: none; }
+  .header-actions button {
+    min-height: 38px;
+    height: 38px;
+    padding: 0 10px;
+    font-size: 0.8125rem;
+  }
+  .header-actions .btn-label { display: none; }
+  .header-actions button:disabled .btn-label { display: inline; font-size: 0.75rem; }
 }
 
 @media (max-width: 380px) {
@@ -1364,6 +1423,7 @@ const $ = s => document.querySelector(s);
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const label = m => LABELS[m] || m;
 const fmt = n => n == null ? "–" : (Math.round(n * 10) / 10).toLocaleString("id-ID");
+const round1 = v => v == null ? null : Math.round(v * 10) / 10;
 function fmtDate(ts) {
   if (!ts) return "";
   const d = new Date(ts);
@@ -1398,7 +1458,7 @@ const avg = xs => { const v = xs.filter(valid); return v.length ? v.reduce((a, b
 const tingkat = k => String(k).split(".")[0];
 function summary(d) {
   const all = d.siswa.flatMap(s => s.nilai).filter(valid);
-  return { siswa: d.siswa.length, kelas: new Set(d.siswa.map(s => s.kelas)).size, rata: avg(all), tuntas: all.length ? all.filter(v => v >= KKM).length / all.length * 100 : null };
+  return { siswa: d.siswa.length, kelas: new Set(d.siswa.map(s => s.kelas)).size, rata: avg(all), tuntas: all.length ? all.filter(v => round1(v) >= KKM).length / all.length * 100 : null };
 }
 const avgByMapel = d => d.mapel.map((m, i) => ({ id: i, label: label(m), value: avg(d.siswa.map(s => s.nilai[i])) })).sort((a, b) => a.value == null && b.value == null ? 0 : a.value == null ? 1 : b.value == null ? -1 : a.value - b.value);
 const median = xs => {
@@ -1410,7 +1470,7 @@ const median = xs => {
 
 const passRate = (vals, kkm = KKM) => {
   const v = vals.filter(valid);
-  return v.length ? v.filter(x => x >= kkm).length / v.length * 100 : null;
+  return v.length ? v.filter(x => round1(x) >= kkm).length / v.length * 100 : null;
 };
 
 // Bins: [0-49][50-59][60-69][70-74][75-84][85-100]
@@ -1425,7 +1485,7 @@ const distributionFor = vals => {
     const to = i + 1 < BINS_MAPEL.length ? BINS_MAPEL[i+1][0] : Infinity;
     return {
       label: text,
-      value: v.filter(x => x >= from && x < to).length,
+      value: v.filter(x => round1(x) >= from && round1(x) < to).length,
       aboveKkm: BINS_MAPEL[i][2]
     };
   });
@@ -1438,7 +1498,7 @@ const perClassTuntas = (d, mapelIdx) => {
   });
   return Object.keys(g).sort(natural).map(k => {
     const v = g[k].filter(valid);
-    const tuntas = v.filter(x => x >= KKM).length;
+    const tuntas = v.filter(x => round1(x) >= KKM).length;
     return {
       kelas: k,
       tuntas,
@@ -1450,12 +1510,12 @@ const perClassTuntas = (d, mapelIdx) => {
 
 const remedialList = (d, mapelIdx) => {
   return d.siswa
-    .filter(s => valid(s.nilai[mapelIdx]) && s.nilai[mapelIdx] < KKM)
+    .filter(s => valid(s.nilai[mapelIdx]) && round1(s.nilai[mapelIdx]) < KKM)
     .map(s => ({
       nama: s.nama,
       kelas: s.kelas,
       nilai: s.nilai[mapelIdx],
-      gap: s.nilai[mapelIdx] - KKM
+      gap: round1(s.nilai[mapelIdx]) - KKM
     }))
     .sort((a, b) => b.nilai - a.nilai); // paling dekat KKM dulu
 };
@@ -1468,7 +1528,7 @@ const distribution = d => {
   const all = d.siswa.flatMap(s => s.nilai).filter(valid);
   return BINS.map(([from, text], i) => {
     const to = i + 1 < BINS.length ? BINS[i + 1][0] : Infinity;
-    return { label: text, value: all.filter(v => v >= from && v < to).length };
+    return { label: text, value: all.filter(v => round1(v) >= from && round1(v) < to).length };
   });
 };
 function kelengkapan(d) {
@@ -1575,11 +1635,11 @@ function downloadXlsx(rows, fileName) {
 }
 
 /* ===== State ===== */
-const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", heatOnlyLow: false, setupToken: "", nama: "", error: "", loading: false, cooldown: 0, updatedAt: store.get(DATA_KEY)?.updatedAt || null, _view: null, _hadData: false };
+const S = { sess: store.get(SESSION_KEY), data: null, view: "dashboard", kelas: "", mapel: 0, mapelKelas: "", q: "", tg: "", heatOnlyLow: false, setupToken: "", nama: "", nip: "", error: "", loading: false, cooldown: 0, updatedAt: store.get(DATA_KEY)?.updatedAt || null, _view: null, _hadData: false };
 
 /* ===== Komponen tampilan ===== */
-const bars = items => items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track" role="meter" aria-valuenow="${i.value ?? 0}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(i.label)}: ${fmt(i.value)}"><div class="fill${i.value != null && i.value < KKM ? ' low' : ''}" style="width:${Math.min(100, i.value || 0)}%"></div><div class="kkm" style="left:${KKM}%" title="KKM ${KKM}"></div></div><span>${cell(i.value)}</span></div>`).join("");
-const cell = v => v == null ? "–" : v < KKM ? `<span class="low" title="Di bawah KKM">▼ ${fmt(v)}</span>` : fmt(v);
+const bars = items => items.map(i => `<div class="bar"><span>${esc(i.label)}</span><div class="track" role="meter" aria-valuenow="${i.value ?? 0}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(i.label)}: ${fmt(i.value)}"><div class="fill${i.value != null && round1(i.value) < KKM ? ' low' : ''}" style="width:${Math.min(100, i.value || 0)}%"></div><div class="kkm" style="left:${KKM}%" title="KKM ${KKM}"></div></div><span>${cell(i.value)}</span></div>`).join("");
+const cell = v => v == null ? "–" : round1(v) < KKM ? `<span class="low" title="Di bawah KKM">▼ ${fmt(v)}</span>` : fmt(v);
 const chunkHead = cols => `<thead><tr><th scope="col">No</th><th scope="col">Nama</th>${cols.map(c => `<th scope="col">${esc(c)}</th>`).join("")}</tr></thead>`;
 const options = (list, sel, all) => (all ? `<option value="">${all}</option>` : "") + list.map(([v, t]) => `<option value="${esc(v)}"${String(v) === String(sel) ? " selected" : ""}>${esc(t)}</option>`).join("");
 const kelasList = d => [...new Set(d.siswa.map(s => s.kelas))].sort(natural);
@@ -1594,8 +1654,8 @@ const MAPEL_SHORT = {
   "Pendidikan Pancasila": "PPKn",
   "Bahasa Indonesia": "B. Indo",
   "Bahasa Daerah": "B. Daerah",
-  "Bahasa Inggris": "B. Ingg",
-  "Matematika": "Mat",
+  "Bahasa Inggris": "B. Ing",
+  "Matematika": "MTK",
   "Informatika": "Info",
   "Seni Budaya": "Seni",
   "Prakarya": "Prakarya",
@@ -1604,7 +1664,23 @@ const MAPEL_SHORT = {
   "PJOK": "PJOK"
 };
 const shortLabel = m => {
-  const lbl = label(m);
+  const lbl = label(m).trim();
+  const lower = lbl.toLowerCase();
+  if (/matematika|\bmtk\b|\bmat\b/i.test(lower)) return "MTK";
+  if (/inggris|\bing\b/i.test(lower)) return "B. Ing";
+  if (/indonesia|\bindo\b/i.test(lower)) return "B. Indo";
+  if (/sunda/i.test(lower)) return "B. Sunda";
+  if (/daerah/i.test(lower)) return "B. Daerah";
+  if (/infor/i.test(lower)) return "Info";
+  if (/islam|\bpai\b/i.test(lower)) return "PAI";
+  if (/kristen|\bpak\b/i.test(lower)) return "PAK";
+  if (/katolik/i.test(lower)) return "Katolik";
+  if (/pancasila|\bppkn\b|\bpkn\b/i.test(lower)) return "PPKn";
+  if (/\bipa\b|alam/i.test(lower)) return "IPA";
+  if (/\bips\b|sosial/i.test(lower)) return "IPS";
+  if (/\bpjok\b|jasmani|penjas/i.test(lower)) return "PJOK";
+  if (/seni/i.test(lower)) return "Seni";
+  if (/prakarya/i.test(lower)) return "Prakarya";
   return MAPEL_SHORT[lbl] || (lbl.length > 8 ? lbl.slice(0, 7) + "…" : lbl);
 };
 
@@ -1628,7 +1704,7 @@ function insights(d) {
     return { kelas: k, avg: scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null };
   }).filter(k => k.avg !== null);
 
-  const belowMapel = mapelAvgs.filter(m => m.avg < KKM);
+  const belowMapel = mapelAvgs.filter(m => round1(m.avg) < KKM);
   const sortedMapel = [...mapelAvgs].sort((a, b) => a.avg - b.avg);
   const sortedKelas = [...kelasAvgs].sort((a, b) => a.avg - b.avg);
   const res = [];
@@ -1645,7 +1721,7 @@ function insights(d) {
   }
 
   // 2. Mapel dengan rata-rata terendah di bawah KKM
-  if (sortedMapel.length && sortedMapel[0].avg < KKM) {
+  if (sortedMapel.length && round1(sortedMapel[0].avg) < KKM) {
     res.push({
       type: "warn",
       text: `Mata pelajaran ${sortedMapel[0].label} memiliki rata-rata terendah (${fmt(sortedMapel[0].avg)}), di bawah KKM ${KKM}.`,
@@ -1677,7 +1753,7 @@ function insights(d) {
   // 4. Kelas dengan rata-rata terendah
   if (sortedKelas.length && res.length < 3) {
     const lowestK = sortedKelas[0];
-    if (lowestK.avg < KKM) {
+    if (round1(lowestK.avg) < KKM) {
       res.push({
         type: "warn",
         text: `Kelas ${lowestK.kelas} perlu perhatian khusus dengan rata-rata ${fmt(lowestK.avg)} (di bawah KKM ${KKM}).`,
@@ -1733,13 +1809,13 @@ function matrixAgg(d, tg) {
     const mapelAvgs = Array.from({ length: nMapel }, (_, c) => counts[r][c] > 0 ? sums[r][c] / counts[r][c] : null);
     const validAvgs = mapelAvgs.filter(valid);
     const rowAvg = validAvgs.length ? validAvgs.reduce((a, b) => a + b, 0) / validAvgs.length : null;
-    const belowCount = mapelAvgs.filter(v => v != null && v < KKM).length;
+    const belowCount = mapelAvgs.filter(v => v != null && round1(v) < KKM).length;
     const mapels = d.mapel.map((m, j) => ({
       mapelIdx: j,
       label: label(m),
       short: shortLabel(m),
       val: mapelAvgs[j],
-      isLow: mapelAvgs[j] != null && mapelAvgs[j] < KKM
+      isLow: mapelAvgs[j] != null && round1(mapelAvgs[j]) < KKM
     })).sort((a, b) => {
       if (a.val == null && b.val == null) return 0;
       if (a.val == null) return 1;
@@ -1759,8 +1835,9 @@ function matrixAgg(d, tg) {
 
 function heatLevel(v) {
   if (v == null) return "none";
-  if (v < KKM) return "low";
-  if (v < KKM + 5) return "mid";
+  const r = round1(v);
+  if (r < KKM) return "low";
+  if (r < KKM + 5) return "mid";
   return "good";
 }
 
@@ -1842,7 +1919,7 @@ function viewLogin() {
             <button type="button" class="subtle" data-toggle-pw="pin2" style="position:absolute; right:4px; top:50%; transform:translateY(-50%); min-height:36px; padding:0 8px; font-size:0.75rem" aria-label="Tampilkan PIN">Tampilkan PIN</button>
           </div>
         </div>` : `
-        <div class="field"><label for="nip">NIP</label><input id="nip" inputmode="numeric" maxlength="20" autocomplete="username" required></div>
+        <div class="field"><label for="nip">NIP</label><input id="nip" value="${esc(S.nip || '')}" inputmode="numeric" maxlength="20" autocomplete="username" required></div>
         <div class="field">
           <label for="secret">PIN / kode aktivasi</label>
           <div style="position:relative; display:flex; align-items:center">
@@ -1897,9 +1974,9 @@ function viewDashboard() {
         </svg>
         <div class="dash-ring-inner">
           <span class="dash-ring-pct">${sm.tuntas == null ? "–" : fmt(sm.tuntas) + "%"}</span>
-          <span class="dash-ring-sub">Ketuntasan</span>
         </div>
       </div>
+      <div class="dash-ring-sub">Ketuntasan</div>
       <div class="dash-ring-caption">Nilai &ge; KKM ${KKM}</div>
     </div>
 
@@ -1912,9 +1989,9 @@ function viewDashboard() {
         </svg>
         <div class="dash-ring-inner">
           <span class="dash-ring-pct">${kl.pct == null ? "–" : fmt(kl.pct) + "%"}</span>
-          <span class="dash-ring-sub">Kelengkapan</span>
         </div>
       </div>
+      <div class="dash-ring-sub">Kelengkapan</div>
       <div class="dash-ring-caption">${kl.terisi} dari ${kl.total} terisi${kl.kosong > 0 ? ` (${kl.kosong} kosong)` : ""}</div>
     </div>
 
@@ -1943,13 +2020,13 @@ function viewDashboard() {
 
     <div class="card stat stat-tile stat-rata">
       <div class="stat-head">
-        <span class="stat-icon" data-tone="${sm.rata != null && sm.rata >= KKM ? 'emerald' : 'rose'}">
+        <span class="stat-icon" data-tone="${sm.rata != null && round1(sm.rata) >= KKM ? 'emerald' : 'rose'}">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
         </span>
-        <span class="muted stat-label">Rata-rata</span>
+        <span class="muted stat-label">Rerata</span>
       </div>
       <b>${fmt(sm.rata)}</b>
-      ${sm.rata != null ? (sm.rata >= KKM
+      ${sm.rata != null ? (round1(sm.rata) >= KKM
         ? `<span class="stat-trend is-up">+${fmt(sm.rata - KKM)} vs KKM</span>`
         : `<span class="stat-trend is-down">${fmt(sm.rata - KKM)} vs KKM</span>`)
         : `<span class="muted">–</span>`}
@@ -1982,7 +2059,7 @@ function viewDashboard() {
       const nMapel = d.mapel.length;
       const allMatrixVals = matrix.flatMap(r => r.mapelAvgs).filter(valid);
       const matrixTotalCells = allMatrixVals.length;
-      const matrixBelowCells = allMatrixVals.filter(v => v < KKM).length;
+      const matrixBelowCells = allMatrixVals.filter(v => round1(v) < KKM).length;
       const summaryText = matrixTotalCells === 0
         ? "Belum ada data nilai"
         : matrixBelowCells > 0
@@ -2092,7 +2169,7 @@ function viewDashboard() {
               const isOpen = row.belowCount > 0 && hpOpened < 2;
               if (isOpen) hpOpened++;
               const mapelsToShow = S.heatOnlyLow
-                ? row.mapels.filter(m => m.val != null && m.val < KKM)
+                ? row.mapels.filter(m => m.val != null && round1(m.val) < KKM)
                 : row.mapels;
               return `
                 <details class="dash-heat-accordion"${isOpen ? " open" : ""}>
@@ -2174,7 +2251,7 @@ function viewKelas() {
     <button data-act="export-kelas">Unduh .xlsx</button></div>
   ${rows.length ? `<p class="muted scroll-hint" style="font-size:0.75rem; margin-bottom:var(--s1)">&larr; Geser tabel ke kanan untuk melihat seluruh mapel &rarr;</p>
   <div class="tw"><table>${chunkHead(d.mapel.map(label).concat("Rata-rata"))}<tbody>${rows.map(s => `<tr><td>${esc(s.no_urut)}</td><th scope="row" title="${esc(s.nama)}">${esc(s.nama)}</th>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("")}</tbody>
-    <tfoot><tr><td></td><td>Rata-rata kelas</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr></tfoot></table></div>` : `<div class="card empty">Tidak ada siswa yang cocok.</div>`}`;
+    <tfoot><tr><td></td><td>${S.q.trim() ? "Rata-rata (hasil filter)" : "Rata-rata kelas"}</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr></tfoot></table></div>` : `<div class="card empty">Tidak ada siswa yang cocok.</div>`}`;
 }
 function mapelRows() {
   const i = S.mapel;
@@ -2188,7 +2265,7 @@ function mapelRows() {
 function viewMapel() {
   const d = S.data, i = S.mapel, rows = mapelRows();
   const vals = rows.map(s => s.nilai[i]);
-  const below = vals.filter(v => v < KKM).length;
+  const below = vals.filter(v => round1(v) < KKM).length;
   const pRate = passRate(vals);
   const med = median(vals);
 
@@ -2256,7 +2333,7 @@ function viewMapel() {
           <tbody>
             ${rows.map((s, n) => {
               const val = s.nilai[i];
-              const isTuntas = val >= KKM;
+              const isTuntas = round1(val) >= KKM;
               const rowCls = isTuntas ? "" : ' class="mp-row-below"';
               const statusHtml = isTuntas
                 ? `<span class="mp-status is-tuntas">✓ Tuntas</span>`
@@ -2318,14 +2395,20 @@ function viewApp() {
         </div>
       </div>
       <nav class="bottom-nav" aria-label="Menu utama">${Object.entries(VIEWS).map(([k, [t]]) => `<button data-view="${k}"${k === S.view ? ' aria-current="page"' : ""}>${t}</button>`).join("")}</nav>
-      <div style="display:flex; align-items:center; gap:var(--s2); flex-wrap:wrap">
+      <div class="header-actions">
         ${S.sess ? `
-          <div style="text-align:right; font-size:0.75rem; line-height:1.25">
+          <div class="header-user" style="text-align:right; font-size:0.75rem; line-height:1.25">
             <div style="font-weight:600">${esc(S.sess.nama)}</div>
             ${updatedText ? `<div class="muted" style="font-size:0.6875rem">${esc(updatedText)}</div>` : ""}
           </div>` : ""}
-        <button data-act="refresh"${S.loading || S.cooldown ? " disabled" : ""}>${S.loading ? "Memuat…" : S.cooldown ? `Segarkan (${S.cooldown})` : "Segarkan"}</button>
-        <button class="subtle" data-act="logout">Keluar</button>
+        <button class="btn-refresh" data-act="refresh" title="Segarkan data"${S.loading || S.cooldown ? " disabled" : ""} aria-label="${S.loading ? 'Memuat data' : S.cooldown ? `Segarkan data (${S.cooldown} detik)` : 'Segarkan data'}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          <span class="btn-label">${S.loading ? "Memuat…" : S.cooldown ? `Segarkan (${S.cooldown})` : "Segarkan"}</span>
+        </button>
+        <button class="subtle btn-logout" data-act="logout" title="Keluar dari aplikasi" aria-label="Keluar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span class="btn-label">Keluar</span>
+        </button>
       </div>
     </div>
   </header>
@@ -2408,7 +2491,10 @@ function startCooldown() {
     const b = document.querySelector('[data-act="refresh"]');
     if (b && !S.loading) {
       b.disabled = S.cooldown > 0;
-      b.textContent = S.cooldown > 0 ? `Segarkan (${S.cooldown})` : "Segarkan";
+      const lbl = b.querySelector(".btn-label");
+      const txt = S.cooldown > 0 ? `Segarkan (${S.cooldown})` : "Segarkan";
+      if (lbl) lbl.textContent = txt; else b.textContent = txt;
+      b.setAttribute("aria-label", S.cooldown > 0 ? `Segarkan data (${S.cooldown} detik)` : "Segarkan data");
     }
     if (S.cooldown <= 0) clearInterval(t);
   }, 1000);
@@ -2425,21 +2511,38 @@ const safeName = t => t.replace(/[^\w.-]+/g, "_");
 document.addEventListener("submit", async e => {
   if (e.target.id !== "f-login") return;
   e.preventDefault();
-  const btn = e.target.querySelector("button"), v = id => (document.getElementById(id)?.value || "").trim();
+  const btn = e.target.querySelector("button[type='submit']"), v = id => (document.getElementById(id)?.value || "").trim();
+  if (!S.setupToken) S.nip = v("nip");
   S.error = "";
+  const errEl = e.target.querySelector(".err");
+  if (errEl) errEl.textContent = "";
   try {
     if (S.setupToken) {
       if (!/^\d{6}$/.test(v("pin"))) throw new Error("PIN harus terdiri dari 6 angka.");
       if (v("pin") !== v("pin2")) throw new Error("Kedua PIN tidak sama.");
     } else if (!/^\d{8,20}$/.test(v("nip").replace(/\s+/g, "")) || !v("secret")) throw new Error("Isi NIP (angka) dan PIN/kode aktivasi.");
-    btn.disabled = true; btn.textContent = "Memproses…";
+    if (btn) { btn.disabled = true; btn.textContent = "Memproses…"; }
     const r = S.setupToken ? await api({ action: "setPin", setupToken: S.setupToken, pin: v("pin") })
                            : await api({ action: "login", nip: v("nip").replace(/\s+/g, ""), secret: v("secret") });
-    if (r.needsPin) { S.setupToken = r.setupToken; S.nama = r.nama; render(); $("#pin").focus(); return; }
+    if (r.needsPin) { S.setupToken = r.setupToken; S.nama = r.nama; render(); $("#pin")?.focus(); return; }
     startSession(r);
   } catch (err) {
-    if (err.code === "SESSION_EXPIRED") S.setupToken = "";
-    S.error = err.message; render();
+    if (err.code === "SESSION_EXPIRED") {
+      S.setupToken = "";
+      S.error = err.message;
+      render();
+      return;
+    }
+    S.error = err.message;
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = S.setupToken ? "Simpan PIN" : "Masuk";
+    }
+    if (errEl) {
+      errEl.textContent = err.message;
+    } else {
+      render();
+    }
   }
 });
 let searchTimer;
@@ -2508,8 +2611,8 @@ document.addEventListener("input", e => {
       const tbody = document.querySelector(".tw tbody");
       const tfoot = document.querySelector(".tw tfoot");
       if (tbody && rows.length) {
-        tbody.innerHTML = rows.map(s => `<tr><td>${esc(s.no_urut)}</td><th scope="row" title="${esc(s.nama)}">${esc(s.nama)}</th>${s.nilai.map(v => `<td>${cell(v)}</td>`).join("")}<td><b>${cell(avg(s.nilai))}</b></td></tr>`).join("");
-        if (tfoot) tfoot.innerHTML = `<tr><td></td><td>Rata-rata kelas</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr>`;
+        const labelAvg = S.q.trim() ? "Rata-rata (hasil filter)" : "Rata-rata kelas";
+        if (tfoot) tfoot.innerHTML = `<tr><td></td><td>${labelAvg}</td>${d.mapel.map((_, i) => `<td>${fmt(avg(rows.map(s => s.nilai[i])))}</td>`).join("")}<td>${fmt(avg(rows.map(s => avg(s.nilai))))}</td></tr>`;
       } else {
         render();
       }
