@@ -227,6 +227,9 @@ nav button[aria-current=page]:hover, nav.bottom-nav button[aria-current=page]:ho
 
 .grid { display: grid; gap: var(--s3); }
 .two { grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--s3); }
+.stats { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); }
+.stat { display: flex; flex-direction: column; gap: var(--s1); }
+.stat b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
 
 button, input, select {
   font: var(--font-body);
@@ -404,12 +407,12 @@ tfoot td:first-child, tfoot td:nth-child(2) { z-index: 3; }
   pointer-events: none;
 }
 .dash-ring-pct {
-  font-size: 1.625rem; font-weight: 700; line-height: 1.1;
+  font-size: 1.25rem; font-weight: 700; line-height: 1.1;
   font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
 }
 .dash-ring-sub {
-  font-size: 0.75rem; color: var(--muted); text-transform: uppercase;
-  letter-spacing: .06em; margin-top: 2px;
+  font-size: 0.625rem; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .02em; margin-top: 2px;
 }
 .dash-ring-caption {
   margin-top: var(--s2); font-size: 0.75rem; color: var(--text-muted);
@@ -2439,6 +2442,7 @@ document.addEventListener("submit", async e => {
     S.error = err.message; render();
   }
 });
+let searchTimer;
 document.addEventListener("click", e => {
   const pw = e.target.closest("[data-toggle-pw]");
   if (pw) {
@@ -2452,15 +2456,17 @@ document.addEventListener("click", e => {
     return;
   }
   const v = e.target.closest("[data-view]"), a = e.target.closest("[data-act]");
-  if (v) { S.view = v.dataset.view; render(); return; }
+  if (v) { clearTimeout(searchTimer); S.view = v.dataset.view; render(); return; }
   if (!a) return;
   const act = a.dataset.act, d = S.data;
   if (act === "nav-kelas") {
+    clearTimeout(searchTimer);
     S.view = "kelas";
     S.kelas = a.dataset.kelas;
     render();
   }
   else if (act === "nav-mapel") {
+    clearTimeout(searchTimer);
     S.view = "mapel";
     S.mapel = Number(a.dataset.mapel);
     S.mapelKelas = a.dataset.kelas || "";
@@ -2490,11 +2496,11 @@ document.addEventListener("change", e => {
   const m = { kelas: v => S.kelas = v, mapel: v => S.mapel = Number(v), mk: v => S.mapelKelas = v, tg: v => S.tg = v }[e.target.id];
   if (m) { m(e.target.value); render(); }
 });
-let searchTimer;
 document.addEventListener("input", e => {
   if (e.target.id === "q") {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
+      if (S.view !== "kelas") return;
       S.q = e.target.value;
       const d = S.data;
       if (!d) return;
